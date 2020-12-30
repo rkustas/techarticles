@@ -7,7 +7,7 @@ import {
 import { API } from "../../../../config";
 import Router, { withRouter } from "next/router";
 import jwt from "jsonwebtoken";
-import Layout from "../../../../components/Layout";
+import Layout from "../../../../components/layout";
 
 const ResetPassword = ({ router }) => {
   // Create state to store token

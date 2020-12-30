@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Layout from "../../../components/Layout";
+import Layout from "../../../components/layout";
 import Link from "next/link";
 import axios from "axios";
 import renderHTML from "react-render-html";

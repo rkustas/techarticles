@@ -4,7 +4,7 @@ import axios from "axios";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import Router from "next/router";
-import Layout from "../../../components/Layout";
+import Layout from "../../../components/layout";
 
 const forgotPassword = () => {
   // Create state to store token

@@ -5,7 +5,7 @@ import axios from "axios";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import { withRouter } from "next/router";
-import Layout from "../../../components/Layout";
+import Layout from "../../../components/layout";
 
 const ActivateAccount = ({ router }) => {
   // Create state to store token
