@@ -16,7 +16,7 @@ const Register = () => {
     password: "",
     error: "",
     success: "",
-    buttonText: "",
+    buttonText: "Register",
     loadedCategories: [],
     categories: [],
   });
