@@ -90,7 +90,7 @@ const Layout = ({ children }) => {
         </React.Fragment>
       )}
 
-      {process.browser && isAuth() && (
+      {isAuth() && (
         <li className="nav-item">
           <a onClick={logout} className="nav-link text-light">
             Logout
