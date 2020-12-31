@@ -12,8 +12,8 @@ import { useState, useEffect } from "react";
 const Login = () => {
   // State where name,email,password are stored and function to update the state
   const [state, setState] = useState({
-    email: "reactawsmongo@gmail.com",
-    password: "RyKu001!",
+    email: "",
+    password: "",
     error: "",
     success: "",
     buttonText: "Login",

@@ -11,12 +11,12 @@ import { useState, useEffect } from "react";
 const Register = () => {
   // State where name,email,password are stored and function to update the state
   const [state, setState] = useState({
-    name: "Ryan",
-    email: "rk@gmail.com",
-    password: "6666644",
+    name: "",
+    email: "",
+    password: "",
     error: "",
     success: "",
-    buttonText: "Register",
+    buttonText: "",
     loadedCategories: [],
     categories: [],
   });
