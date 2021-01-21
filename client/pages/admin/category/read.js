@@ -5,6 +5,7 @@ import Link from "next/link";
 import { API } from "../../../config";
 import { useEffect, useState } from "react";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
+import Head from "next/head";
 
 // With Admin returns user and token props
 const Read = ({ user, token }) => {
@@ -56,7 +57,7 @@ const Read = ({ user, token }) => {
     categories.map((c, i) => (
       <Link href={`/links/${c.slug}`} key={c._id}>
         <a
-          style={{ border: "1px solid red" }}
+          style={{ border: "1px solid black" }}
           className="bg-light p-3 col-md-6"
         >
           <div>
@@ -65,7 +66,7 @@ const Read = ({ user, token }) => {
                 <img
                   src={c.image.url}
                   alt={c.name}
-                  style={{ width: "100px", height: "auto" }}
+                  style={{ width: "125px", height: "auto" }}
                   className="pr-3"
                 />
               </div>
@@ -94,6 +95,11 @@ const Read = ({ user, token }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Category List</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-12">
           <h1>List of Categories</h1>

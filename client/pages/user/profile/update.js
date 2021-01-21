@@ -6,6 +6,7 @@ import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import { isAuth } from "../../../helpers/auth";
 import { updateUser } from "../../../helpers/auth";
+import Head from "next/head";
 
 // Create a state using hook
 import { useState, useEffect } from "react";
@@ -175,6 +176,11 @@ const Profile = ({ user, token }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Update Profile</title>
+        </Head>
+      </div>
       <div className="col-md-6 offset-md-3">
         <h1>Update Profile</h1>
         <br />

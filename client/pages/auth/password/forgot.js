@@ -5,6 +5,7 @@ import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import Router from "next/router";
 import Layout from "../../../components/layout";
+import Head from "next/head";
 
 const forgotPassword = () => {
   // Create state to store token
@@ -63,6 +64,11 @@ const forgotPassword = () => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Forgot Password</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h1>Forgot Password</h1>

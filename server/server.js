@@ -25,6 +25,8 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const categoryRoutes = require("./routes/category");
 const linkRoutes = require("./routes/link");
+const storeRoutes = require("./routes/store");
+const orderRoutes = require("./routes/order");
 
 // app middlewares
 app.use(morgan("dev"));
@@ -40,6 +42,8 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", linkRoutes);
+app.use("/api", storeRoutes);
+app.use("/api", orderRoutes);
 
 // Port
 const port = process.env.PORT || 8000;

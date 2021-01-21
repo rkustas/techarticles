@@ -1,10 +1,10 @@
-import Layout from "../components/layout";
 import axios from "axios";
 import { showSuccessMessage, showErrorMessage } from "../helpers/alerts";
 import { API } from "../config";
 import Link from "next/link";
 import Router from "next/router";
 import { authenticate, isAuth } from "../helpers/auth";
+import Head from "next/head";
 
 // Create a state using hook
 import { useState, useEffect } from "react";
@@ -56,7 +56,7 @@ const Login = () => {
           : Router.push("/user");
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       // If error in response, return current state, and error message
       setState({
         ...state,
@@ -88,25 +88,40 @@ const Login = () => {
           required
         />
       </div>
-      <div className="form-group">
-        <button className="btn btn-outline-dark">{buttonText}</button>
+      <div className="form-group text-center">
+        <button className="btn btn-dark">{buttonText}</button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
-      <div className="col-md-6 offset-md-3">
-        <h1>Login</h1>
-        <br />
-        {success && showSuccessMessage(success)}
-        {error && showErrorMessage(error)}
-        {loginForm()}
-        <Link href="/auth/password/forgot">
-          <a className="text-dark float-right">Forgot Password</a>
-        </Link>
+    <>
+      <div>
+        <Head>
+          <title>Login</title>
+        </Head>
       </div>
-    </Layout>
+      <main>
+        <div className="col-md-6 offset-md-3">
+          <h1>Login</h1>
+          <br />
+          {success && showSuccessMessage(success)}
+          {error && showErrorMessage(error)}
+          {loginForm()}
+          <p className="text-center mt-2">
+            <Link href="/auth/password/forgot">
+              <a style={{ color: "crimson" }}>Forgot Password</a>
+            </Link>
+          </p>
+          <p className="text-center mt-2">
+            <span className="mr-2">Don't have an account?</span>
+            <Link href="/register">
+              <a style={{ color: "crimson" }}>Sign up</a>
+            </Link>
+          </p>
+        </div>
+      </main>
+    </>
   );
 };
 

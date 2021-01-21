@@ -16,11 +16,12 @@ const { userUpdateValidator } = require("../validators/auth");
 const { runValidation } = require("../validators/index");
 
 // Import controllers
-const { read, update } = require("../controllers/user");
+const { read, update, readLinks } = require("../controllers/user");
 
 // Routes
 router.get("/user", reqSignin, authMiddleware, read);
 router.get("/admin", reqSignin, adminMiddleware, read);
+router.post("/user/link", reqSignin, authMiddleware, read);
 router.put(
   "/user",
   userUpdateValidator,

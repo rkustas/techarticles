@@ -8,6 +8,7 @@ import { API } from "../../../../config";
 import Router, { withRouter } from "next/router";
 import jwt from "jsonwebtoken";
 import Layout from "../../../../components/layout";
+import Head from "next/head";
 
 const ResetPassword = ({ router }) => {
   // Create state to store token
@@ -85,6 +86,11 @@ const ResetPassword = ({ router }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Password Reset</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h1>Hi {name}, please reset your password</h1>

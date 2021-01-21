@@ -2,12 +2,27 @@ import Layout from "../../components/layout";
 import Link from "next/link";
 import Router from "next/router";
 import axios from "axios";
+import { useState } from "react";
 import moment from "moment";
 import { API } from "../../config";
 import { getCookie } from "../../helpers/auth";
 import withUser from "../withUser";
+import Head from "next/head";
 
 const User = ({ user, userLinks, token }) => {
+  const initialState = {
+    links: userLinks,
+    avatar: "",
+    name: "",
+    password: "",
+    cf_password: "",
+  };
+
+  const [data, setData] = useState(initialState);
+  const { links, avatar, name, password, cf_password } = data;
+
+  // console.log(user);
+
   const confirmDelete = (e, id) => {
     e.preventDefault();
     // console.log('delete > ', slug);
@@ -32,10 +47,26 @@ const User = ({ user, userLinks, token }) => {
     }
   };
 
+  const handleClick = async (linkId) => {
+    // Put because we are updating the links
+    const response = await axios.put(`${API}/click-count`, { linkId });
+    loadUpdatedLinks();
+  };
+
+  const loadUpdatedLinks = async () => {
+    const response = await axios.get(`${API}/user`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+        contentType: "application/json",
+      },
+    });
+    setAllLinks(response.data.links);
+  };
+
   const listOfLinks = () =>
-    userLinks.map((l, i) => (
+    links.map((l, i) => (
       <div key={i} className="row alert alert-primary p-2">
-        <div className="col-md-8">
+        <div className="col-md-8" onClick={() => handleClick(l._id)}>
           <a href={l.url} target="_blank">
             <h5 className="pt-2">{l.title}</h5>
             <h6 className="pt-2 text-danger" style={{ fontSize: "12px" }}>
@@ -76,36 +107,50 @@ const User = ({ user, userLinks, token }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>User Profile</title>
+        </Head>
+      </div>
       <h1>
         {user.name}'s dashboard{" "}
         <span className="text-warning">/{user.role}</span>
       </h1>
       <hr />
 
-      <div className="row">
+      <section
+        className="row p-2 bg-light"
+        style={{ border: "1px solid black" }}
+      >
         <div className="col-md-4">
-          <ul className="nav flex-column">
-            <li className="nav-item">
+          <h3 className="text-center text-uppercase">profile</h3>
+          <div className="avatar">
+            <img src={user.avatar} alt={user.avatar} />
+          </div>
+          <div className="nav flex-column text-center">
+            <div>
               <Link href="/user/link/create">
-                <a className="nav link">Submit a link</a>
+                <button className="btn btn-primary">Submit a link</button>
               </Link>
-            </li>
-            <li className="nav-item">
+            </div>
+            <div className="mt-2">
               <Link href="/user/profile/update">
-                <a className="nav link">Update Profile</a>
+                <button className="btn btn-secondary">Update Profile</button>
               </Link>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
 
         <div className="col-md-8">
-          <h2>Your links</h2>
+          <h3 className="text-center text-uppercase">Your links</h3>
           <br />
           {listOfLinks()}
+          <div>
+            <h3 className="text-center text-uppercase">orders</h3>
+          </div>
         </div>
-      </div>
+      </section>
     </Layout>
   );
 };
-
 export default withUser(User);

@@ -1,8 +1,244 @@
 #nprogress .bar {
-  height: 6px !important;
-  background: red !important;
+  height: 5px !important;
+  background: var(--lightBlue) !important;
 }
 
-.nav a:hover {
-  border-radius: 0px;
+:root {
+  --mainBlue: #2a2a72;
+  --lightBlue: #009ffd;
+  --mainWhite: #f3f3f3;
+  --mainDark: #232528;
+  --mainYellow: #ffa400;
+  --mainSpacing: 3px;
+  --mainTransition: all 0.3s linear;
 }
+
+html,
+body {
+  font-family: "Oswald", sans-serif !important;
+  /* background: var(--mainWhite) !important; */
+  color: var(--mainDark) !important;
+  font-size: small !important;
+  padding-top: 70px;
+}
+
+.text-title {
+  font-family: "Permanent Marker", cursive;
+  letter-spacing: 0.3rem;
+  text-transform: uppercase;
+}
+
+.text-blue {
+  color: var(--mainBlue);
+}
+
+.text-bright {
+  color: var(--lightBlue);
+}
+
+.form-check {
+  padding-left: 0 !important;
+}
+
+body {
+  min-height: 1rem;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body::after {
+  content: "";
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: fixed;
+  z-index: -1;
+  background-image: url("/img/parralaximg.png");
+}
+
+#progressBarContainer {
+  position: fixed;
+  z-index: 100;
+  background: transparent;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+
+#progressBar {
+  background: var(--mainBlue);
+  transform-origin: bottom left;
+  transform: scale(0, 0);
+  opacity: 1;
+  margin: 0;
+}
+
+#progressBarContainer,
+#progressBar {
+  height: 5px;
+}
+
+.btn-black {
+  background: transparent;
+  text-transform: capitalize;
+  font-size: 0.8rem !important;
+  color: var(--mainDark);
+  border-radius: 0 !important;
+  border: 0.1rem solid var(--mainDark) !important;
+}
+
+.btn-black:hover {
+  background: var(--mainDark) !important;
+  color: var(--mainWhite) !important;
+}
+
+.material-icons.orange600 {
+  color: #fb8c00;
+  cursor: pointer;
+}
+
+.material-icons {
+  cursor: pointer;
+}
+
+.App {
+  margin-top: 15px;
+}
+
+.App .navbar-brand {
+  font-weight: bold;
+}
+
+.Routes {
+  padding-top: 5rem;
+}
+
+.form-group {
+  text-transform: capitalize;
+}
+
+.form-group label {
+  display: block;
+  letter-spacing: var(--mainSpacing);
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  width: 100%;
+  background: transparent;
+  font-size: 1rem;
+}
+
+.filter-form {
+  width: 60vw;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(202px, 1fr));
+  grid-row-gap: 2rem;
+  grid-column-gap: 40px;
+}
+
+@media screen and (min-width: 776px) {
+  .filter-form {
+    width: 70vw;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .filter-form {
+    width: 95vw;
+    max-width: 1170px;
+  }
+}
+
+.productslist {
+  padding: 5rem 0;
+}
+
+.productslist-center {
+  width: 80vw;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+}
+
+@media screen and (min-width: 776px) {
+  .productslist-center {
+    width: 90vw;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .productslist-center {
+    width: 95vw;
+    max-width: 1170px;
+  }
+}
+
+.empty-search {
+  text-align: center;
+  text-transform: capitalize;
+  margin: 2rem 0;
+  padding: 1rem;
+  letter-spacing: var(--mainSpacing);
+}
+
+.nav-links {
+  height: 0;
+  overflow: hidden;
+  list-style-type: none;
+  transition: var(--mainTransition);
+}
+
+.show-nav {
+  height: 45px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.nav-links a {
+  display: inline-flex;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  color: var(--mainDark);
+  transition: var(--mainTransition);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: var(--mainSpacing);
+}
+
+@media screen and (min-width: 768px) {
+  .nav-btn {
+    display: none;
+  }
+
+  .nav-links {
+    height: auto;
+    display: inline-flex;
+  }
+
+  .nav-links a {
+    margin: 0 0.2rem;
+    padding: 0.2rem 0;
+  }
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  color: var(--mainWhite);
+}
+
+/* -------- Loading*/
+
+@import url("./loading.css");

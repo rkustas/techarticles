@@ -7,6 +7,7 @@ import withUser from "../../withUser";
 import { API } from "../../../config";
 import { getCookie, isAuth } from "../../../helpers/auth";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
+import Head from "next/head";
 
 // Received token props from getInitalProps function down below
 const Update = ({ oldLink, token }) => {
@@ -223,6 +224,11 @@ const Update = ({ oldLink, token }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Link Detail</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-12">
           <h1>Update a Link/URL</h1>

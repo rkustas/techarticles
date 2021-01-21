@@ -168,10 +168,10 @@ exports.clickCount = (req, res) => {
 
 exports.popular = (req, res) => {
   // find links and sort by popularity
-  Link.find()
+  Link.find({})
     .populate("postedBy", "name")
     .sort({ clicks: -1 })
-    .limit(3)
+    .limit(5)
     .exec((err, links) => {
       if (err) {
         return res.status(400).json({
@@ -194,6 +194,7 @@ exports.popularInCategory = (req, res) => {
     }
     // Sort links by category
     Link.find({ categories: category })
+      .populate("postedBy", "name")
       .sort({ clicks: -1 })
       .limit(3)
       .exec((err, links) => {

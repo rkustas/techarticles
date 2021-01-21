@@ -1,6 +1,5 @@
 import { useEffect, useState, Fragment } from "react";
 import Layout from "../../components/layout";
-import Link from "next/link";
 import Head from "next/head";
 import axios from "axios";
 import renderHTML from "react-render-html";
@@ -65,6 +64,7 @@ const Links = ({
 
   const loadUpdatedLinks = async () => {
     const response = await axios.post(`${API}/category/${query.slug}`);
+    console.log(response);
     setAllLinks(response.data.links);
   };
 
@@ -75,7 +75,10 @@ const Links = ({
         <div className="col-md-8" onClick={() => handleClick(l._id)}>
           <a href={l.url} target="_blank">
             <h5 className="pt-2">{l.title}</h5>
-            <h6 className="pt-2 text-danger" style={{ fontSize: "12px" }}>
+            <h6
+              className="pt-2 text-danger"
+              style={{ fontSize: "12px", overflowWrap: "break-word" }}
+            >
               {l.url}
             </h6>
           </a>
@@ -85,7 +88,7 @@ const Links = ({
             {moment(l.createdAt).fromNow()} by {l.postedBy.name}
           </span>
         </div>
-        <div className="col">
+        <div className="col-md-12">
           <span className="badge text-dark">
             {l.type} / {l.medium}
           </span>
@@ -106,10 +109,13 @@ const Links = ({
     // Store links in the state, handy for adding more
     allLinks.map((l, i) => (
       <div key={i} className="row alert alert-primary p-2">
-        <div className="col-md-8" onClick={(e) => handleClick(l._id)}>
+        <div className="col-md-8" onClick={() => handleClick(l._id)}>
           <a href={l.url} target="_blank">
             <h5 className="pt-2">{l.title}</h5>
-            <h6 className="pt-2 text-danger" style={{ fontSize: "12px" }}>
+            <h6
+              className="pt-2 text-danger"
+              style={{ fontSize: "12px", overflowWrap: "break-word" }}
+            >
               {l.url}
             </h6>
           </a>
@@ -153,11 +159,16 @@ const Links = ({
   return (
     <Fragment>
       <Layout>
+        <div>
+          <Head>
+            <title>Link Detail</title>
+          </Head>
+        </div>
         <div className="row">
           <div className="col-md-8">
             <h1 className="display-4 font-weight-bold">
               {category.name} - URL/Links
-              <div className="lead alert alert-seconday pt-4">
+              <div className="lead alert alert-secondary pt-4">
                 {renderHTML(category.content || "")}
               </div>
             </h1>
@@ -183,7 +194,9 @@ const Links = ({
           <div className="row">
             <div className="col-md-8">{listOfLinks()}</div>
             <div className="col-md-4">
-              <h2 className="lead">Most popular in {category.name}</h2>
+              <h2 className="lead" style={{ textAlign: "center" }}>
+                Most popular in {category.name}
+              </h2>
               <div className="p-3">{listOfPopularLinks()}</div>
             </div>
           </div>
@@ -194,7 +207,7 @@ const Links = ({
 };
 
 // Grabbing from context, destructuring
-Links.getInitialProps = async ({ query, req }) => {
+Links.getInitialProps = async ({ query }) => {
   let skip = 0;
   let limit = 2;
 

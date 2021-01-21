@@ -4,6 +4,7 @@ import Router from "next/router";
 import { showSuccessMessage, showErrorMessage } from "../helpers/alerts";
 import { API } from "../config";
 import { isAuth } from "../helpers/auth";
+import Head from "next/head";
 
 // Create a state using hook
 import { useState, useEffect } from "react";
@@ -14,6 +15,7 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
+    cf_password: "",
     error: "",
     success: "",
     buttonText: "Register",
@@ -31,6 +33,7 @@ const Register = () => {
     name,
     email,
     password,
+    cf_password,
     error,
     success,
     buttonText,
@@ -61,7 +64,7 @@ const Register = () => {
       // Remove category from all if category already found
       all.splice(clickedCategory, 1);
     }
-    console.log("all >> categories", all);
+    // console.log("all >> categories", all);
     setState({ ...state, categories: all, success: "", error: "" });
   };
 
@@ -104,7 +107,7 @@ const Register = () => {
         password,
         categories,
       });
-      console.log(response);
+      // console.log(response);
       // If valid response, then reset the state and return a success message
       setState({
         ...state,
@@ -115,7 +118,7 @@ const Register = () => {
         success: response.data.message,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       // If error in response, return current state, and error message
       setState({
         ...state,
@@ -125,39 +128,6 @@ const Register = () => {
     }
   };
 
-  // const handleSubmit = (e) => {
-  //   setState({ ...state, buttonText: "Registering" });
-  //   //   Handle submitting the form, where the data is posted to db
-  //   e.preventDefault();
-  //   // console.table({ name, email, password });
-  //   axios
-  //     .post(`http://localhost:8000/api/register`, {
-  //       name,
-  //       email,
-  //       password,
-  //     })
-  //     .then((response) => {
-  //       console.log(response);
-  //       // If valid response, then reset the state and return a success message
-  //       setState({
-  //         ...state,
-  //         name: "",
-  //         email: "",
-  //         password: "",
-  //         buttonText: "Submitted",
-  //         success: response.data.message,
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       // If error in response, return current state, and error message
-  //       setState({
-  //         ...state,
-  //         buttonText: "Register",
-  //         error: error.response.data.error,
-  //       });
-  //     });
-  // };
   const registerForm = () => (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
@@ -191,19 +161,34 @@ const Register = () => {
         />
       </div>
       <div className="form-group">
+        <input
+          value={cf_password}
+          onChange={handleChange("cf_password")}
+          type="password"
+          className="form-control"
+          placeholder="Confirm your password"
+          required
+        />
+      </div>
+      <div className="form-group">
         <label className="text-muted ml-4">Category</label>
         <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
           {showCategories()}
         </ul>
       </div>
-      <div className="form-group">
-        <button className="btn btn-outline-dark">{buttonText}</button>
+      <div className="form-group text-center">
+        <button className="btn btn-dark">{buttonText}</button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
+    <>
+      <div>
+        <Head>
+          <title>Register</title>
+        </Head>
+      </div>
       <div className="col-md-6 offset-md-3">
         <h1>Register</h1>
         <br />
@@ -211,7 +196,7 @@ const Register = () => {
         {error && showErrorMessage(error)}
         {registerForm()}
       </div>
-    </Layout>
+    </>
   );
 };
 

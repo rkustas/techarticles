@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema(
       index: true,
       lowercase: true,
     },
+    avatar: {
+      type: String,
+      key: String,
+      default:
+        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
+    },
     name: {
       type: String,
       trim: true,

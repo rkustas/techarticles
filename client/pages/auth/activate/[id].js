@@ -6,6 +6,7 @@ import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import { withRouter } from "next/router";
 import Layout from "../../../components/layout";
+import Head from "next/head";
 
 const ActivateAccount = ({ router }) => {
   // Create state to store token
@@ -59,6 +60,11 @@ const ActivateAccount = ({ router }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Activate Account</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h1>Hello {name}, ready to activate your account?</h1>

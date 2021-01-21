@@ -4,9 +4,11 @@ import { API } from "../config";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import moment from "moment";
+import Head from "next/head";
 
 // Props can be passed down and made available through the function below
 const Home = ({ categories }) => {
+  // console.log(categories);
   const [popular, setPopular] = useState([]);
 
   useEffect(() => {
@@ -62,8 +64,8 @@ const Home = ({ categories }) => {
     categories.map((c, i) => (
       <Link href={`/links/${c.slug}`} key={c._id}>
         <a
-          style={{ border: "1px solid red" }}
-          className="bg-light p-3 col-md-4"
+          style={{ border: "1px solid black" }}
+          className="p-3 col-md-4 bg-light"
         >
           <div>
             <div className="row">
@@ -71,12 +73,12 @@ const Home = ({ categories }) => {
                 <img
                   src={c.image.url}
                   alt={c.name}
-                  style={{ width: "100px", height: "auto" }}
-                  className="pr-3"
+                  style={{ width: "125px", height: "auto" }}
+                  className="pr-5"
                 />
               </div>
               <div className="col-md-8">
-                <h3>{c.name}</h3>
+                <h3 className="overflow-hidden">{c.name}</h3>
               </div>
             </div>
           </div>
@@ -85,16 +87,22 @@ const Home = ({ categories }) => {
     ));
   return (
     <Layout>
-      <div className="row">
-        <div className="col-md-12">
-          <h1 className="font-weight-bold">
-            Browse Tutorials/Course
-            <br />
-          </h1>
-        </div>
+      <div>
+        <Head>
+          <title>Home</title>
+        </Head>
       </div>
-
-      <div className="row">{listCategories()}</div>
+      <div>
+        <div className="row">
+          <div className="col-md-12">
+            <h1 className="font-weight-bold">
+              Browse Tutorials/Course
+              <br />
+            </h1>
+          </div>
+        </div>
+        <div className="row overflow-hidden">{listCategories()}</div>
+      </div>
       <div className="row pt-5">
         <h2 className="font-weight-bold pb-3">Trending</h2>
         <div className="col-md-12 overflow-hidden">{listOfLinks()}</div>

@@ -8,6 +8,7 @@ import { API } from "../../../config";
 import InfiniteScroll from "react-infinite-scroller";
 import withAdmin from "../../withAdmin";
 import { getCookie } from "../../../helpers/auth";
+import Head from "next/head";
 
 const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
   const [allLinks, setAllLinks] = useState(links);
@@ -107,6 +108,11 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Admin Link List</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-12">
           <h1 className="display-4 font-weight-bold">All Links</h1>

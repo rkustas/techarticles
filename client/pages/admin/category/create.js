@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 // Bring in custom react quill bubble theme css
 import "react-quill/dist/quill.bubble.css";
+import Head from "next/head";
 
 // Function to create a category
 const Create = ({ user, token }) => {
@@ -182,6 +183,11 @@ const Create = ({ user, token }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Create Category</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h1>Create category</h1>

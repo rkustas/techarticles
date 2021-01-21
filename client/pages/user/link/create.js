@@ -6,6 +6,7 @@ import axios from "axios";
 import { API } from "../../../config";
 import { getCookie, isAuth } from "../../../helpers/auth";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
+import Head from "next/head";
 
 // Received token props from getInitalProps function down below
 const Create = ({ token }) => {
@@ -223,6 +224,11 @@ const Create = ({ token }) => {
 
   return (
     <Layout>
+      <div>
+        <Head>
+          <title>Create Link</title>
+        </Head>
+      </div>
       <div className="row">
         <div className="col-md-12">
           <h1>Submit a Link/URL</h1>
