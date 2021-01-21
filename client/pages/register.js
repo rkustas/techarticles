@@ -105,6 +105,7 @@ const Register = () => {
         name,
         email,
         password,
+        cf_password,
         categories,
       });
       // console.log(response);
@@ -114,6 +115,7 @@ const Register = () => {
         name: "",
         email: "",
         password: "",
+        cf_password: "",
         buttonText: "Submitted",
         success: response.data.message,
       });

@@ -4,7 +4,7 @@ import CartIcon from "../components/cart/carticon";
 import { isAuth, logout } from "../helpers/auth";
 
 const Nav = () => {
-  console.log(isAuth());
+  // console.log(isAuth());
   const router = useRouter();
   const isActive = (r) => {
     if (r === router.pathname) {
@@ -49,11 +49,53 @@ const Nav = () => {
         <ul className="navbar-nav ml-auto">
           <CartIcon />
           {process.browser && isAuth() && isAuth().role === "admin" && (
-            <li className="nav-item">
-              <a className="nav-link" href="/admin">
-                {isAuth().name}
-              </a>
-            </li>
+            <>
+              <div className="avatar">
+                <img
+                  src={isAuth().avatar}
+                  alt={isAuth().avatar}
+                  style={{
+                    borderRadius: "50%",
+                    width: "30px",
+                    height: "30px",
+                    transform: "translateY(-3px)",
+                    marginRight: "3px",
+                  }}
+                />
+              </div>
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  id="navbarDropdownMenuLink"
+                  data-toggle="dropdown"
+                  role="button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  {isAuth().name}
+                </a>
+                <div
+                  className="dropdown-menu"
+                  style={{ marginLeft: "-3rem" }}
+                  aria-labelledby="navbarDropdownMenuLink"
+                >
+                  <Link href="/user">
+                    <a className="dropdown-item">Dashboard</a>
+                  </Link>
+                  <Link href="/user/profile/update">
+                    <a className="dropdown-item">Profile</a>
+                  </Link>
+                  <div className="dropdown-divider"></div>
+                  {isAuth() && (
+                    <Link href="#">
+                      <a className="dropdown-item" onClick={logout}>
+                        Logout
+                      </a>
+                    </Link>
+                  )}
+                </div>
+              </li>
+            </>
           )}
           {process.browser && isAuth() && isAuth().role === "subscriber" && (
             <>

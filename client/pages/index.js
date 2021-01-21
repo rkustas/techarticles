@@ -27,6 +27,8 @@ const Home = ({ categories }) => {
     loadPopular();
   };
 
+  console.log(popular);
+
   const listOfLinks = () =>
     popular.map((l, i) => (
       <div className="row alert alert-secondary p-2" key={i}>

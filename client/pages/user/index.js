@@ -124,7 +124,7 @@ const User = ({ user, userLinks, token }) => {
       >
         <div className="col-md-4">
           <h3 className="text-center text-uppercase">profile</h3>
-          <div className="avatar">
+          <div className="avatar text-center">
             <img src={user.avatar} alt={user.avatar} />
           </div>
           <div className="nav flex-column text-center">

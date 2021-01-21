@@ -5,7 +5,7 @@ exports.create = async (req, res) => {
   try {
     const { address, mobile, cart, total } = req.body;
     // console.table({ address, mobile, cart, total });
-    // Using let because the Link is changing and updating, can't use const
+    // Using let because the Order is changing and updating, can't use const
     let order = new Order({
       address,
       mobile,
@@ -26,7 +26,7 @@ exports.create = async (req, res) => {
     // console.log(order);
 
     // Save the order
-    // await order.save();
+    await order.save();
 
     res.json({
       msg: "Payment success!  We will contact you to confirm the order.",
