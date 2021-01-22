@@ -108,7 +108,10 @@ const User = ({ user, userLinks, token }) => {
         <span className="text-warning">/{user.role}</span>
       </h1>
       <hr />
-      <section className="row p-2">
+      <section
+        className="row p-2"
+        style={{ backgroundColor: "ghostwhite", border: "solid red 1px" }}
+      >
         <div className="col-md-4">
           <Profile user={user} token={token} />
         </div>
@@ -117,7 +120,9 @@ const User = ({ user, userLinks, token }) => {
           <h3 className="text-center text-uppercase">Your links</h3>
           <div className="text-center">
             <Link href="/user/link/create">
-              <button className="btn btn-primary">Submit a link</button>
+              <button className="btn btn-outline-primary btn-block">
+                Submit a link
+              </button>
             </Link>
           </div>
           <br />

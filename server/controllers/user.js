@@ -1,5 +1,14 @@
 const User = require("../models/user");
 const Link = require("../models/link");
+const AWS = require("aws-sdk");
+const { v4: uuidv4 } = require("uuid");
+
+// s3
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 
 exports.read = (req, res) => {
   User.findOne({ _id: req.user._id }).exec((err, user) => {
@@ -29,7 +38,7 @@ exports.read = (req, res) => {
 
 // Update user
 exports.update = (req, res) => {
-  const { name, password, categories } = req.body;
+  const { name, password, avatar, categories } = req.body;
   switch (true) {
     case password && password.length < 6:
       return res
@@ -37,6 +46,34 @@ exports.update = (req, res) => {
         .json({ error: "Password must be at least 6 characters long" });
       break;
   }
+
+  // Convert image to base64, smaller image, new buffer data, data:image and base64 replaced with empty string
+  const base64data = new Buffer.from(
+    avatar.replace(/^data:image\/\w+;base64,/, ""),
+    "base64"
+  );
+
+  // Get image type
+  const type = avatar.split(";")[0].split("/")[1];
+  // Params for base64 image
+  const params = {
+    Bucket: "hackrio",
+    Key: `user/${uuidv4()}.${type}`,
+    Body: base64data,
+    ACL: "public-read",
+    ContentEncoding: "base64",
+    ContentType: `image/${type}`,
+  };
+
+  s3.upload(params, (err, data) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json({ error: "Upload to s3 failed" });
+    }
+    console.log("AWS UPLOAD RES DATA", data);
+    avatar.url = data.Location;
+    avatar.key = data.Key;
+  });
 
   User.findOneAndUpdate(
     { _id: req.user._id },
