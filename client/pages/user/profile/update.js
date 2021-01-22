@@ -1,16 +1,13 @@
-import Layout from "../../../components/layout";
 import axios from "axios";
 import Router from "next/router";
-import withUser from "../../withUser";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
-import { isAuth } from "../../../helpers/auth";
 import { updateUser } from "../../../helpers/auth";
-import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
+import { useState, useContext, useEffect } from "react";
+import Resizer from "react-image-file-resizer";
 
 // Create a state using hook
-import { useState, useEffect } from "react";
-
 const Profile = ({ user, token }) => {
   // State where name,email,password are stored and function to update the state
   const [state, setState] = useState({
@@ -18,19 +15,25 @@ const Profile = ({ user, token }) => {
     email: user.email,
     password: "",
     error: "",
+    avatar: "",
+    imgURL: "",
     success: "",
     buttonText: "Update",
     loadedCategories: [],
     categories: user.categories,
   });
 
+  const { dispatch } = useContext(ProductContext);
+
   //   Destructure values from state
   const {
     name,
     email,
     password,
+    avatar,
     error,
     success,
+    imgURL,
     buttonText,
     loadedCategories,
     categories,
@@ -59,7 +62,7 @@ const Profile = ({ user, token }) => {
       // Remove category from all if category already found
       all.splice(clickedCategory, 1);
     }
-    console.log("all >> categories", all);
+    // console.log("all >> categories", all);
     setState({ ...state, categories: all, success: "", error: "" });
   };
 
@@ -102,6 +105,7 @@ const Profile = ({ user, token }) => {
         {
           name,
           password,
+          avatar,
           categories,
         },
         {
@@ -115,6 +119,7 @@ const Profile = ({ user, token }) => {
         // If valid response, then reset the state and return a success message
         setState({
           ...state,
+          avatar: "",
           buttonText: "Updated",
           success: "Profile updated successfully",
         });
@@ -124,15 +129,72 @@ const Profile = ({ user, token }) => {
       // If error in response, return current state, and error message
       setState({
         ...state,
+        avatar: "",
         buttonText: "Update",
         error: error.response.data.error,
       });
     }
   };
 
+  const changeAvatar = (e) => {
+    // console.log(e);
+    const file = e.target.files[0];
+    if (!file)
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: "File does not exist." },
+      });
+    if (file.size > 1024 * 1024)
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: "The largest image size is 1mb." },
+      });
+    if (file.type !== "image/jpeg" && file.type !== "image/png")
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: "Image format is incorrect" },
+      });
+
+    Resizer.imageFileResizer(
+      file,
+      300,
+      300,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        console.log(uri);
+        setState({ ...state, avatar: uri, imgURL: file });
+      },
+      "base64"
+    );
+  };
+  console.log(state);
+
   const updateForm = () => (
     <form onSubmit={handleSubmit}>
+      <h3 className="text-center text-uppercase">User Profile</h3>
+      <div className="profile_avatar">
+        <img
+          // src={user.avatar}
+          src={imgURL ? URL.createObjectURL(imgURL) : user.avatar}
+          alt="avatar"
+        />
+        <span>
+          <i className="fas fa-camera"> </i>
+          <p>Change</p>
+          <input
+            type="file"
+            name="file"
+            id="file_up"
+            className="mb-3"
+            onChange={changeAvatar}
+            accept="image/*"
+          />
+        </span>
+      </div>
       <div className="form-group">
+        <label htmlFor="name">Name</label>
         <input
           value={name}
           onChange={handleChange("name")}
@@ -143,6 +205,7 @@ const Profile = ({ user, token }) => {
         />
       </div>
       <div className="form-group">
+        <label htmlFor="email">Email</label>
         <input
           value={email}
           onChange={handleChange("email")}
@@ -154,6 +217,7 @@ const Profile = ({ user, token }) => {
         />
       </div>
       <div className="form-group">
+        <label htmlFor="password">Password</label>
         <input
           value={password}
           onChange={handleChange("password")}
@@ -162,34 +226,26 @@ const Profile = ({ user, token }) => {
           placeholder="Type your password"
         />
       </div>
-      <div className="form-group">
+      <div className="form-check">
         <label className="text-muted ml-4">Category</label>
         <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
           {showCategories()}
         </ul>
       </div>
-      <div className="form-group">
-        <button className="btn btn-outline-dark">{buttonText}</button>
+      <div className="form-group text-center">
+        <button className="btn btn-outline-dark btn-block">{buttonText}</button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
-      <div>
-        <Head>
-          <title>Update Profile</title>
-        </Head>
-      </div>
-      <div className="col-md-6 offset-md-3">
-        <h1>Update Profile</h1>
-        <br />
-        {success && showSuccessMessage(success)}
-        {error && showErrorMessage(error)}
-        {updateForm()}
-      </div>
-    </Layout>
+    <>
+      <br />
+      {success && showSuccessMessage(success)}
+      {error && showErrorMessage(error)}
+      {updateForm()}
+    </>
   );
 };
 
-export default withUser(Profile);
+export default Profile;

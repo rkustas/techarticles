@@ -40,7 +40,7 @@ exports.update = (req, res) => {
 
   User.findOneAndUpdate(
     { _id: req.user._id },
-    { name, password, categories },
+    { name, avatar, password, categories },
     { new: true }
   ).exec((err, updated) => {
     if (err) {

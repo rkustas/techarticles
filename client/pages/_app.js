@@ -1,5 +1,6 @@
 import Layout from "../components/layout";
 import { ProductProvider } from "../components/context/globalstate";
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
   return (

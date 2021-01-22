@@ -179,7 +179,7 @@ const Register = () => {
         </ul>
       </div>
       <div className="form-group text-center">
-        <button className="btn btn-dark">{buttonText}</button>
+        <button className="btn btn-dark btn-block">{buttonText}</button>
       </div>
     </form>
   );

@@ -120,6 +120,32 @@ const Create = ({ token }) => {
           Book
         </label>
       </div>
+      <div className="form-check ml-3">
+        <label className="form-check-label">
+          <input
+            type="radio"
+            onClick={handleMediumClick}
+            checked={medium === "blog post"}
+            value="blog post"
+            className="form-check-input"
+            name="medium"
+          />{" "}
+          Blog Post
+        </label>
+      </div>
+      <div className="form-check ml-3">
+        <label className="form-check-label">
+          <input
+            type="radio"
+            onClick={handleMediumClick}
+            checked={medium === "article"}
+            value="article"
+            className="form-check-input"
+            name="medium"
+          />{" "}
+          Article
+        </label>
+      </div>
     </React.Fragment>
   );
 
@@ -210,10 +236,10 @@ const Create = ({ token }) => {
           value={url}
         />
       </div>
-      <div>
+      <div className="text-center">
         <button
           disabled={!token}
-          className="btn btn-outline-dark"
+          className="btn btn-outline-dark btn-block"
           type="submit"
         >
           {isAuth() || token ? "Post" : "Login to post"}
@@ -237,7 +263,7 @@ const Create = ({ token }) => {
       </div>
       <div className="row">
         <div className="col-md-4">
-          <div className="form-group">
+          <div className="form-check">
             <label className="text-muted ml-4">Category</label>
             <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
               {showCategories()}

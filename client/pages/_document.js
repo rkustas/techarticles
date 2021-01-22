@@ -24,18 +24,15 @@ class MyDocument extends Document {
           ></script>
 
           {/* Import styles */}
-          <link rel="stylesheet" href="/static/css/styles.css" />
           <link
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet"
           ></link>
-          <link
-            rel="canonical"
-            href="https://getbootstrap.com/docs/4.3/components/dropdowns/"
-          ></link>
         </Head>
-        <Main />
-        <NextScript />
+        <body>
+          <Main />
+          <NextScript />
+        </body>
       </Html>
     );
   }

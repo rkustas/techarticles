@@ -16,7 +16,7 @@ const { userUpdateValidator } = require("../validators/auth");
 const { runValidation } = require("../validators/index");
 
 // Import controllers
-const { read, update, readLinks } = require("../controllers/user");
+const { read, update, updateAvatar } = require("../controllers/user");
 
 // Routes
 router.get("/user", reqSignin, authMiddleware, read);

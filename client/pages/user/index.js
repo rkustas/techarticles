@@ -2,24 +2,16 @@ import Layout from "../../components/layout";
 import Link from "next/link";
 import Router from "next/router";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import moment from "moment";
 import { API } from "../../config";
 import { getCookie } from "../../helpers/auth";
 import withUser from "../withUser";
 import Head from "next/head";
+import Profile from "./profile/update";
 
 const User = ({ user, userLinks, token }) => {
-  const initialState = {
-    links: userLinks,
-    avatar: "",
-    name: "",
-    password: "",
-    cf_password: "",
-  };
-
-  const [data, setData] = useState(initialState);
-  const { links, avatar, name, password, cf_password } = data;
+  const [links, setAllLinks] = useState(userLinks);
 
   // console.log(user);
 
@@ -104,12 +96,11 @@ const User = ({ user, userLinks, token }) => {
         </div>
       </div>
     ));
-
   return (
-    <Layout>
+    <>
       <div>
         <Head>
-          <title>User Profile</title>
+          <title>Profile</title>
         </Head>
       </div>
       <h1>
@@ -117,32 +108,18 @@ const User = ({ user, userLinks, token }) => {
         <span className="text-warning">/{user.role}</span>
       </h1>
       <hr />
-
-      <section
-        className="row p-2 bg-light"
-        style={{ border: "1px solid black" }}
-      >
+      <section className="row p-2">
         <div className="col-md-4">
-          <h3 className="text-center text-uppercase">profile</h3>
-          <div className="avatar text-center">
-            <img src={user.avatar} alt={user.avatar} />
-          </div>
-          <div className="nav flex-column text-center">
-            <div>
-              <Link href="/user/link/create">
-                <button className="btn btn-primary">Submit a link</button>
-              </Link>
-            </div>
-            <div className="mt-2">
-              <Link href="/user/profile/update">
-                <button className="btn btn-secondary">Update Profile</button>
-              </Link>
-            </div>
-          </div>
+          <Profile user={user} token={token} />
         </div>
 
         <div className="col-md-8">
           <h3 className="text-center text-uppercase">Your links</h3>
+          <div className="text-center">
+            <Link href="/user/link/create">
+              <button className="btn btn-primary">Submit a link</button>
+            </Link>
+          </div>
           <br />
           {listOfLinks()}
           <div>
@@ -150,7 +127,7 @@ const User = ({ user, userLinks, token }) => {
           </div>
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 export default withUser(User);

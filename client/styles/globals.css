@@ -239,6 +239,90 @@ body::after {
   color: var(--mainWhite);
 }
 
+.profile_avatar {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  position: relative;
+  margin: 15px auto;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile_avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.profile_avatar span {
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #fff8;
+  text-align: center;
+  font-weight: 400;
+  color: rgb(255, 140, 45);
+  transition: 0.3 ease-in-out;
+}
+
+.profile_avatar:hover span {
+  bottom: -15%;
+}
+
+.profile_avatar input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+::-webkit-file-upload-button {
+  cursor: pointer;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loading svg {
+  font-size: 5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: text 1s ease-in-out infinite;
+}
+
+@keyframes text {
+  50% {
+    opacity: 0.1;
+  }
+}
+
+.loading polygon {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 1;
+  animation: dash 4s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite
+    alternate-reverse;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 234;
+  }
+}
+
 /* -------- Loading*/
 
 @import url("./loading.css");
+
+/* ---------- Profile*/
+@import url("./profile.css");
