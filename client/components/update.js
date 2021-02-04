@@ -1,9 +1,9 @@
 import axios from "axios";
 import Router from "next/router";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
-import { API } from "../../../config";
-import { updateUser } from "../../../helpers/auth";
-import { ProductContext } from "../../../components/context/globalstate";
+import { showSuccessMessage, showErrorMessage } from "../helpers/alerts";
+import { API } from "../config";
+import { updateUser } from "../helpers/auth";
+import { ProductContext } from "./context/globalstate";
 import { useState, useContext, useEffect } from "react";
 import Resizer from "react-image-file-resizer";
 
@@ -114,7 +114,7 @@ const Profile = ({ user, token }) => {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
       updateUser(response.data, () => {
         // If valid response, then reset the state and return a success message
         setState({
@@ -169,11 +169,11 @@ const Profile = ({ user, token }) => {
       "base64"
     );
   };
-  console.log(state);
+  // console.log(state);
 
   const updateForm = () => (
     <form onSubmit={handleSubmit}>
-      <h3 className="text-center text-uppercase">User Profile</h3>
+      <h3 className="text-center text-uppercase">Profile</h3>
       <div className="profile_avatar">
         <img
           // src={user.avatar}

@@ -10,6 +10,7 @@ const withAdmin = (Page) => {
     // Set user to null
     let user = null;
     let userLinks = [];
+    let userOrders = [];
 
     if (token) {
       try {
@@ -20,8 +21,10 @@ const withAdmin = (Page) => {
             contentType: "application/json",
           },
         });
+        console.log(response);
         user = response.data.user;
         userLinks = response.data.links;
+        userOrders = response.data.orders;
       } catch (error) {
         // If there is an error then set user to null
         if (error.response.status === 401) {
@@ -43,6 +46,7 @@ const withAdmin = (Page) => {
         user,
         token,
         userLinks,
+        userOrders,
       };
     }
   };

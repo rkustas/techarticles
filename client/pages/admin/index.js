@@ -1,12 +1,11 @@
 // /admin endpoint
 
-import Layout from "../../components/layout";
 import withAdmin from "../withAdmin";
 import Link from "next/link";
 import Head from "next/head";
 
 const Admin = ({ user }) => (
-  <Layout>
+  <>
     <div>
       <Head>
         <title>Admin Dashboard</title>
@@ -27,24 +26,39 @@ const Admin = ({ user }) => (
           </li>
           <li className="nav-item">
             <Link href="/admin/category/read">
-              <a className="nav-link">All Categories</a>
+              <a className="nav-link">Article Categories</a>
             </Link>
           </li>
           <li className="nav-item">
             <Link href="/admin/link/read">
-              <a className="nav-link">All Links</a>
+              <a className="nav-link">Links</a>
             </Link>
           </li>
           <li className="nav-item">
-            <Link href="/user/profile/update">
+            <Link href="/user">
               <a className="nav-link">Update Profile</a>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link href="/users">
+              <a className="nav-link">Users</a>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link href="/createproduct">
+              <a className="nav-link">Create Product</a>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link href="/categories">
+              <a className="nav-link">Product Categories</a>
             </Link>
           </li>
         </ul>
       </div>
       <div className="col-md-8"></div>
     </div>
-  </Layout>
+  </>
 );
 
 export default withAdmin(Admin);

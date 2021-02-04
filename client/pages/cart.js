@@ -6,20 +6,25 @@ import CartItem from "../components/cart/cart-page/cartitem";
 import Link from "next/link";
 import { isAuth } from "../helpers/auth";
 import { ButtonContainer } from "../components/button";
-import PaypalButton from "./paypalButton";
+import PaypalButton from "../components/paypalButton";
 import { getCookie } from "../helpers/auth";
 import axios from "axios";
 import { API } from "../config";
+import { useRouter } from "next/router";
 
 const Cart = ({ token }) => {
+  console.log(token);
   const { state, dispatch } = useContext(ProductContext);
-  const { cart } = state;
+  const { cart, orders } = state;
 
   // State
   const [total, setTotal] = useState(0);
   const [address, setAddress] = useState("");
   const [mobile, setMobile] = useState("");
-  const [payment, setPayment] = useState(false);
+
+  const [callback, setCallback] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const getTotal = () => {
@@ -40,7 +45,7 @@ const Cart = ({ token }) => {
       const updateCart = async () => {
         for (const item of cartLocal) {
           const response = await axios.get(`${API}/store/${item._id}`);
-          const { _id, Name, Price, inStock, Image, sold } = response.data;
+          const { _id, Name, Price, inStock, Image, sold, id } = response.data;
           if (inStock > 0) {
             newArr.push({
               _id,
@@ -49,6 +54,7 @@ const Cart = ({ token }) => {
               Image,
               inCart: true,
               sold,
+              id,
               inStock,
               count: item.count > inStock ? 1 : item.count,
             });
@@ -60,13 +66,72 @@ const Cart = ({ token }) => {
     }
   }, []);
 
-  const handlePayment = () => {
+  const postData = async () => {
+    const res = await axios.post(
+      `${API}/order`,
+      { address, mobile, cart, total },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // console.log(res);
+
+    if (res.err) {
+      return dispatch({ type: "NOTIFY", payload: { error: res.data.err } });
+    }
+
+    dispatch({ type: "ADD_CART", payload: [] });
+    const newOrder = {
+      ...res.data.order,
+      user: { _id: isAuth()._id, email: isAuth().email, name: isAuth().name },
+    };
+    dispatch({ type: "ADD_ORDERS", payload: [...orders, newOrder] });
+
+    dispatch({
+      type: "NOTIFY",
+      payload: {
+        success: res.data.msg,
+      },
+    });
+    return router.push(`/order/${res.data.order._id}`);
+  };
+
+  const handlePayment = async () => {
     if (!address || !mobile)
       return dispatch({
         type: "NOTIFY",
         payload: { error: "Please add your address and mobile." },
       });
-    setPayment(true);
+
+    // If the item is inStock push it into a new cart array
+    let newCart = [];
+    for (const item of cart) {
+      const response = await axios.get(`${API}/store/${item._id}`);
+      if (response.data.inStock - item.count >= 0) {
+        newCart.push(item);
+      }
+    }
+    // Checking if product out of stock before you can complete an order
+    if (newCart.length < cart.length) {
+      setCallback(!callback);
+      return dispatch({
+        type: "NOTIFY",
+        payload: {
+          error: "The product is out of stock or the quantity is insufficient",
+        },
+      });
+    }
+    // Set the loading to true
+    dispatch({
+      type: "NOTIFY",
+      payload: {
+        loading: true,
+      },
+    });
+    // posting order, which reroutes to order detail upon completion
+    postData();
   };
 
   if (cart.length === 0) return <EmptyCart />;
@@ -117,26 +182,22 @@ const Cart = ({ token }) => {
             Total: <span className="text-danger">${total}</span>
           </h3>
 
-          <span className="px-2">
-            <Link href={"/store"}>
-              <ButtonContainer>continue shopping</ButtonContainer>
-            </Link>
-            {payment ? (
-              <PaypalButton
-                total={total}
-                address={address}
-                mobile={mobile}
-                state={state}
-                dispatch={dispatch}
-                token={token}
-              />
-            ) : (
-              <Link href={isAuth() ? "#!" : "/login"}>
-                <ButtonContainer onClick={handlePayment}>
-                  proceed with payment
-                </ButtonContainer>
+          <span className="text-center px-3">
+            <>
+              <Link href={"/store"}>
+                <button className="btn btn-outline-danger mr-3">
+                  Continue Shopping
+                </button>
               </Link>
-            )}
+              <Link href={isAuth() ? "#!" : "/login"}>
+                <button
+                  className="btn btn-outline-success"
+                  onClick={handlePayment}
+                >
+                  Proceed with Payment
+                </button>
+              </Link>
+            </>
           </span>
         </form>
       </div>

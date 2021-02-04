@@ -1,19 +1,19 @@
-import Layout from "../../components/layout";
 import Link from "next/link";
 import Router from "next/router";
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import moment from "moment";
 import { API } from "../../config";
-import { getCookie } from "../../helpers/auth";
 import withUser from "../withUser";
 import Head from "next/head";
-import Profile from "./profile/update";
+import Profile from "../../components/update";
 
-const User = ({ user, userLinks, token }) => {
+const User = ({ user, userLinks, userOrders, token }) => {
+  // console.log(user, userLinks, userOrders);
   const [links, setAllLinks] = useState(userLinks);
+  const [orders, setOrders] = useState(userOrders);
 
-  // console.log(user);
+  // console.log(orders[0]._id);
 
   const confirmDelete = (e, id) => {
     e.preventDefault();
@@ -127,9 +127,6 @@ const User = ({ user, userLinks, token }) => {
           </div>
           <br />
           {listOfLinks()}
-          <div>
-            <h3 className="text-center text-uppercase">orders</h3>
-          </div>
         </div>
       </section>
     </>

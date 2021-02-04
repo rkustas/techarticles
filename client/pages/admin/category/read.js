@@ -27,6 +27,7 @@ const Read = ({ user, token }) => {
     const response = await axios.get(`${API}/categories`);
     setState({ ...state, categories: response.data });
   };
+  console.log(categories);
 
   const confirmDelete = (e, slug) => {
     e.preventDefault();

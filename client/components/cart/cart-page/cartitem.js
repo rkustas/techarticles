@@ -60,6 +60,7 @@ const CartItem = ({ product, dispatch, cart }) => {
                     data: cart,
                     id: product._id,
                     name: product.Name,
+                    type: "ADD_CART",
                   },
                 })
               }

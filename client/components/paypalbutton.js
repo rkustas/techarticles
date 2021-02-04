@@ -1,15 +1,25 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { API } from "../config";
 import axios from "axios";
+import { isAuth } from "../helpers/auth";
+import { ProductContext } from "./context/globalstate";
+import { updateItem } from "./context/actions";
+import { getCookieFromBrowser } from "../helpers/auth";
 
-const PaypalButton = ({ total, address, mobile, state, dispatch, token }) => {
+const PaypalButton = ({ order }) => {
   const refPaypalBtn = useRef();
-  const { cart } = state;
+  const { state, dispatch } = useContext(ProductContext);
+  const { orders } = state;
 
-  const postData = async () => {
-    const res = await axios.post(
-      `${API}/order`,
-      { address, mobile, cart, total },
+  const token = getCookieFromBrowser("token");
+  // console.log(token);
+
+  const patchData = async (details) => {
+    const res = await axios.patch(
+      `${API}/order/${order._id}`,
+      {
+        paymentId: details.payer.payer_id,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -19,9 +29,24 @@ const PaypalButton = ({ total, address, mobile, state, dispatch, token }) => {
     console.log(res);
 
     if (res.err) {
-      return dispatch({ type: "NOTIFY", payload: { error: res.data.err } });
+      return dispatch({ type: "NOTIFY", payload: { error: res.err } });
     }
-    dispatch({ type: "ADD_CART", payload: [] });
+
+    dispatch(
+      updateItem(
+        orders,
+        order._id,
+        {
+          ...order,
+          paid: true,
+          dateOfPayment: details.create_time,
+          paymentId: details.payer.payer_id,
+          method: "Paypal",
+        },
+        "ADD_ORDERS"
+      )
+    );
+
     return dispatch({
       type: "NOTIFY",
       payload: {
@@ -39,7 +64,7 @@ const PaypalButton = ({ total, address, mobile, state, dispatch, token }) => {
             purchase_units: [
               {
                 amount: {
-                  value: total,
+                  value: order.total,
                 },
               },
             ],
@@ -51,8 +76,7 @@ const PaypalButton = ({ total, address, mobile, state, dispatch, token }) => {
 
           return actions.order.capture().then(function (details) {
             // This function shows a transaction success message to your buyer.
-            postData();
-            alert("Transaction completed by " + details.payer.name.given_name);
+            patchData(details);
           });
         },
       })

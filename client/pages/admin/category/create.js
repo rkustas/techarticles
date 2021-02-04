@@ -176,7 +176,7 @@ const Create = ({ user, token }) => {
         </label>
       </div>
       <div>
-        <button className="btn btn-outline-dark">{buttonText}</button>
+        <button className="btn btn-outline-dark btn-block">{buttonText}</button>
       </div>
     </form>
   );

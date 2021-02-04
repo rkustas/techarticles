@@ -11,6 +11,7 @@ import { getCookie } from "../../../helpers/auth";
 import Head from "next/head";
 
 const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
+  console.log(token);
   const [allLinks, setAllLinks] = useState(links);
   const [limit, setLimit] = useState(linksLimit);
   const [skip, setSkip] = useState(0);
@@ -41,7 +42,6 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
       console.log("Link delete", error);
     }
   };
-
   const listOfLinks = () =>
     allLinks.map((l, i) => (
       <div key={i} className="row alert alert-primary p-2">
@@ -99,12 +99,13 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
       }
     );
 
-    setAllLinks([...allLinks, ...response.data]);
+    setAllLinks([...allLinks, response.data[0]]);
     // console.log('allLinks', allLinks);
     // console.log('response.data.links.length', response.data.links.length);
     setSize(response.data.length);
     setSkip(toSkip);
   };
+  console.log(allLinks);
 
   return (
     <Layout>

@@ -13,19 +13,21 @@ const Store = ({ products }) => {
           <title>Store</title>
         </Head>
       </div>
-      <Title name="all" title="products"></Title>
-      <section className="productslist">
-        <div className="productslist-center">
-          {" "}
-          {products.length ? (
-            products.map((product) => (
-              <Product key={product._id} product={product} />
-            ))
-          ) : (
-            <Title name="non" title="products"></Title>
-          )}
-        </div>
-      </section>
+      {products.length ? (
+        <>
+          <Title name="all" title="products"></Title>
+          <section className="productslist">
+            <div className="productslist-center">
+              {" "}
+              {products.map((product) => (
+                <Product key={product._id} product={product} />
+              ))}
+            </div>
+          </section>
+        </>
+      ) : (
+        <Title name="No" title="products"></Title>
+      )}
     </Layout>
   );
 };

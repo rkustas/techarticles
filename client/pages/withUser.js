@@ -11,6 +11,8 @@ const withUser = (Page) => {
     let user = null;
     // Bring in userLinks props
     let userLinks = [];
+    // Bring in userOrders props
+    let userOrders = [];
 
     if (token) {
       try {
@@ -24,6 +26,7 @@ const withUser = (Page) => {
         console.log("response in WithUser", response);
         user = response.data.user;
         userLinks = response.data.links;
+        userOrders = response.data.orders;
       } catch (error) {
         // If there is an error then set user to null
         if (error.response.status === 401) {
@@ -45,6 +48,7 @@ const withUser = (Page) => {
         user,
         token,
         userLinks,
+        userOrders,
       };
     }
   };

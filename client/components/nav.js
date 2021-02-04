@@ -79,11 +79,14 @@ const Nav = () => {
                   style={{ marginLeft: "-3rem" }}
                   aria-labelledby="navbarDropdownMenuLink"
                 >
-                  <Link href="/user">
-                    <a className="dropdown-item">Dashboard</a>
+                  <Link href="/admin">
+                    <a className="dropdown-item">Admin Dashboard</a>
                   </Link>
-                  <Link href="/user/profile/update">
+                  <Link href="/user">
                     <a className="dropdown-item">Profile</a>
+                  </Link>
+                  <Link href="/orders">
+                    <a className="dropdown-item">Orders</a>
                   </Link>
                   <div className="dropdown-divider"></div>
                   {isAuth() && (
@@ -131,16 +134,14 @@ const Nav = () => {
                   <Link href="/user">
                     <a className="dropdown-item">Dashboard</a>
                   </Link>
-                  <Link href="/user/profile/update">
-                    <a className="dropdown-item">Profile</a>
+                  <Link href="/orders">
+                    <a className="dropdown-item">Orders</a>
                   </Link>
                   <div className="dropdown-divider"></div>
                   {isAuth() && (
-                    <Link href="#">
-                      <a className="dropdown-item" onClick={logout}>
-                        Logout
-                      </a>
-                    </Link>
+                    <button className="dropdown-item" onClick={logout}>
+                      Logout
+                    </button>
                   )}
                 </div>
               </li>
