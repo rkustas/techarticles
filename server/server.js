@@ -11,6 +11,7 @@ const app = express();
 
 // db connection
 mongoose
+  .set("debug", true)
   .connect(process.env.DATABASE_CLOUD, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -27,6 +28,7 @@ const categoryRoutes = require("./routes/category");
 const linkRoutes = require("./routes/link");
 const storeRoutes = require("./routes/store");
 const orderRoutes = require("./routes/order");
+const productCategoryRoutes = require("./routes/productCategories");
 
 // app middlewares
 app.use(morgan("dev"));
@@ -44,6 +46,7 @@ app.use("/api", categoryRoutes);
 app.use("/api", linkRoutes);
 app.use("/api", storeRoutes);
 app.use("/api", orderRoutes);
+app.use("/api", productCategoryRoutes);
 
 // Port
 const port = process.env.PORT || 8000;

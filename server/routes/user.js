@@ -16,11 +16,19 @@ const { userUpdateValidator } = require("../validators/auth");
 const { runValidation } = require("../validators/index");
 
 // Import controllers
-const { read, update, updateAvatar } = require("../controllers/user");
+const {
+  read,
+  update,
+  list,
+  updateRole,
+  remove,
+} = require("../controllers/user");
 
 // Routes
 router.get("/user", reqSignin, authMiddleware, read);
 router.get("/admin", reqSignin, adminMiddleware, read);
+router.get("/users", reqSignin, adminMiddleware, list);
+router.patch("/users/:id", reqSignin, adminMiddleware, updateRole);
 router.post("/user/link", reqSignin, authMiddleware, read);
 router.put(
   "/user",
@@ -30,6 +38,7 @@ router.put(
   authMiddleware,
   update
 );
+router.delete("/users/:id", reqSignin, adminMiddleware, remove);
 
 // Add router to modules.exports, by default all module exports are empty, we are adding the router property
 module.exports = router;

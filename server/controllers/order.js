@@ -18,18 +18,19 @@ exports.create = async (req, res) => {
 
     // Filter and update sold
     cart.filter((item) => {
-      // console.log(item._id, item.count, item.inStock, item.sold);
-      // console.log(sold(item._id, item.count, item.inStock, item.sold));
-      return soldUpdate(item._id, item.count, item.inStock, item.sold);
+      return soldUpdate(
+        item.productnumber,
+        item.count,
+        item.inStock,
+        item.sold
+      );
     });
 
-    // console.log(order);
-
     // Save the order
-    await order.save();
+    order.save();
 
     res.json({
-      msg: "Payment success!  We will contact you to confirm the order.",
+      msg: "Order has been placed!  We will contact you to confirm the order",
       order,
     });
   } catch (err) {
@@ -40,20 +41,13 @@ exports.create = async (req, res) => {
 // Shortcut sold function
 const soldUpdate = async (id, count, oldInStock, oldSold) => {
   await Store.findOneAndUpdate(
-    { _id: id },
+    { id: id },
     {
       inStock: oldInStock - count,
       sold: count + oldSold,
     },
     { new: true }
-  ).exec((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: "Error updating store",
-      });
-    }
-    console.log(data);
-  });
+  );
 };
 
 exports.list = (req, res) => {
@@ -66,4 +60,83 @@ exports.list = (req, res) => {
     }
     res.json(data);
   });
+};
+
+exports.read = (req, res) => {
+  const { id } = req.params;
+  Order.findOne({ _id: id }).exec((err, data) => {
+    if (err) {
+      return res.status(400).json({
+        error: "Error finding order",
+      });
+    }
+    res.json(data);
+  });
+};
+
+// Update payment
+exports.paymentUpdate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { paymentId } = req.body;
+    await Order.findOneAndUpdate(
+      { _id: id },
+      {
+        paid: true,
+        dateOfPayment: new Date().toISOString(),
+        paymentId,
+        method: "Paypal",
+      }
+    );
+    res.json({ msg: "Payment success!" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+// Update delivered status
+exports.deliveredUpdate = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = Order.findOne({ _id: id });
+    if (order.paid) {
+      await Order.findOneAndUpdate(
+        { _id: id },
+        {
+          delivered: true,
+        }
+      );
+      res.json({
+        msg: "Updated delivered status!",
+        result: {
+          paid: true,
+          dateOfPayment: order.dateOfPayment,
+          method: order.method,
+          delivered: true,
+        },
+      });
+    } else {
+      await Order.findOneAndUpdate(
+        { _id: id },
+        {
+          paid: true,
+          dateOfPayment: new Date().toISOString(),
+          method: "Receive Cash",
+          delivered: true,
+        }
+      );
+      res.json({
+        msg: "Updated delivered status!",
+        result: {
+          paid: true,
+          dateOfPayment: new Date().toISOString(),
+          method: "Receive Cash",
+          delivered: true,
+        },
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };

@@ -5,7 +5,9 @@ const express = require("express");
 const router = express.Router();
 
 // Import Validators
-const { orderCreateValidator } = require("../validators/order");
+const {
+  productCategoryCreateValidator,
+} = require("../validators/productCategories");
 const { runValidation } = require("../validators/index");
 
 // Import from controllers
@@ -17,29 +19,22 @@ const {
 const {
   create,
   list,
-  read,
-  paymentUpdate,
-  deliveredUpdate,
-} = require("../controllers/order");
+  remove,
+  update,
+} = require("../controllers/productCategories");
 
 // Routes
 // Use post because we want req.body
 router.post(
-  "/order",
+  "/productCategory",
   runValidation,
   reqSignin,
-  authMiddleware,
-  orderCreateValidator,
+  adminMiddleware,
+  productCategoryCreateValidator,
   create
 );
-router.get("/orders", runValidation, reqSignin, authMiddleware, list);
-// router.get("/order/:id", read);
-router.patch("/order/:id", reqSignin, authMiddleware, paymentUpdate);
-router.patch(
-  "/order/delivered/:id",
-  reqSignin,
-  adminMiddleware,
-  deliveredUpdate
-);
+router.get("/productCategories", reqSignin, adminMiddleware, list);
+router.put("/productCategories/:id", reqSignin, adminMiddleware, update);
+router.delete("/productCategories/:id", reqSignin, adminMiddleware, remove);
 
 module.exports = router;

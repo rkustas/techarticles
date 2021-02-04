@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const Link = require("../models/link");
+const Order = require("../models/order");
 const AWS = require("aws-sdk");
 const { v4: uuidv4 } = require("uuid");
 
@@ -31,7 +32,34 @@ exports.read = (req, res) => {
         // Set salt and hashed_password to undefined
         user.hashed_password = undefined;
         user.salt = undefined;
-        res.json({ user, links });
+
+        if (user.role === "subscriber") {
+          Order.find({ user: user })
+            .populate("user", "name email")
+            .sort({ createdAt: -1 })
+            .exec((err, orders) => {
+              if (err) {
+                return res.status(400).json({
+                  error: "Could not find orders",
+                });
+              }
+              res.json({ user, orders, links });
+            });
+        } else {
+          Order.find({})
+            .populate("user", "name email")
+            .sort({ createdAt: -1 })
+            .exec((err, orders) => {
+              if (err) {
+                return res.status(400).json({
+                  error: "Could not find orders",
+                });
+              }
+              res.json({ user, orders, links });
+            });
+        }
+
+        // res.json({ user, links });
       });
   });
 };
@@ -90,4 +118,57 @@ exports.update = (req, res) => {
     updated.salt = undefined;
     res.json(updated);
   });
+};
+
+exports.list = (req, res) => {
+  try {
+    User.find({})
+      .select("-password")
+      .select("-salt")
+      .select("-hashed_password")
+      .exec((err, data) => {
+        if (err) {
+          return res.status(400).json({
+            error: "Users could not load",
+          });
+        }
+        res.json({ users: data });
+      });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateRole = (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    User.findOneAndUpdate({ _id: id }, { role }).exec((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Role could not updated",
+        });
+      }
+      res.json({ msg: "Update Success!" });
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.remove = (req, res) => {
+  //Remove the user, only admin can do
+  try {
+    const { id } = req.params;
+    User.findByIdAndDelete(id).exec((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: "User could not updated",
+        });
+      }
+      res.json({ msg: "User Deleted!" });
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
