@@ -121,6 +121,7 @@ const Register = () => {
       return router.push("/login");
     } catch (error) {
       // console.log(error);
+      // console.log(error);
       // If error in response, return current state, and error message
       setRegister({
         ...register,

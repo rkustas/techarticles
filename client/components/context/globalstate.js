@@ -17,7 +17,6 @@ export const ProductProvider = ({ children }) => {
     users: [],
     categories: [],
     artCategories: [],
-    allLinks: [],
   };
   const [state, dispatch] = useReducer(reducers, initialState);
   const { cart, auth } = state;

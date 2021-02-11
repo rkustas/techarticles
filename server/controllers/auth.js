@@ -43,7 +43,7 @@ exports.register = (req, res) => {
   User.findOne({ email }).exec((err, user) => {
     if (user) {
       // If user exists, there is an email already, return invalid response JSON
-      console.log(error);
+      console.log(err);
       return res.status(400).json({
         error: "Email is taken",
       });
@@ -69,13 +69,13 @@ exports.register = (req, res) => {
       .then((data) => {
         console.log("email submitted to SES", data);
         res.json({
-          message: `Email has been sent to ${email}. Follow the instructions to complete your registration`,
+          msg: `Email has been sent to ${email}. Follow the instructions to complete your registration`,
         });
       })
       .catch((error) => {
         console.log("ses email on register", error);
         res.json({
-          message: `We could not verify your email.  Please try again`,
+          msg: `We could not verify your email.  Please try again`,
         });
       });
   });
