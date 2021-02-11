@@ -70,16 +70,19 @@ const Home = ({ categories }) => {
           className="p-3 col-md-4 bg-light"
         >
           <div>
-            <div className="row">
+            <div className="row p-2">
               <div className="col-md-4">
                 <img
                   src={c.image.url}
                   alt={c.name}
-                  style={{ width: "125px", height: "auto" }}
+                  style={{
+                    width: "12rem",
+                    height: "6rem",
+                  }}
                   className="pr-5"
                 />
               </div>
-              <div className="col-md-8">
+              <div className="col-md-8 my-4 text-center">
                 <h3 className="overflow-hidden">{c.name}</h3>
               </div>
             </div>
@@ -105,7 +108,7 @@ const Home = ({ categories }) => {
             </h1>
           </div>
         </div>
-        <div className="row overflow-hidden">{listCategories()}</div>
+        <div className="row overflow-hidden mx-auto">{listCategories()}</div>
       </div>
       <div className="row pt-5">
         <h2 className="font-weight-bold pb-3">Trending</h2>

@@ -173,17 +173,16 @@ const Links = ({
           loader={
             <img key={0} src="/static/images/loading_gif.png" alt="loading" />
           }
-        >
-          <div className="row">
-            <div className="col-md-8">{listOfLinks()}</div>
-            <div className="col-md-4">
-              <h2 className="lead text-center text-title">
-                Most popular in {category.name}
-              </h2>
-              <div className="p-3">{listOfPopularLinks()}</div>
-            </div>
+        ></InfiniteScroll>
+        <div className="row">
+          <div className="col-md-8">{listOfLinks()}</div>
+          <div className="col-md-4">
+            <h2 className="lead text-center text-title">
+              Most popular in {category.name}
+            </h2>
+            <div className="p-3">{listOfPopularLinks()}</div>
           </div>
-        </InfiniteScroll>
+        </div>
       </div>
     </Fragment>
   );
