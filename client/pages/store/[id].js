@@ -2,7 +2,6 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { API } from "../../config";
 import Link from "next/link";
-import { ButtonContainer } from "../../Components/button";
 import Head from "next/head";
 import { addToCart } from "../../components/context/actions";
 import { ProductContext } from "../../components/context/globalstate";
