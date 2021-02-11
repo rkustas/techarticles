@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "../../../components/Layout";
 import Link from "next/link";
 import axios from "axios";
 import moment from "moment";
@@ -104,7 +103,7 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
   };
 
   return (
-    <Layout>
+    <>
       <div className="row">
         <div className="col-md-12">
           <h1 className="display-4 font-weight-bold">All Links</h1>
@@ -124,7 +123,7 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
           <div className="col-md-12">{listOfLinks()}</div>
         </div>
       </InfiniteScroll>
-    </Layout>
+    </>
   );
 };
 
