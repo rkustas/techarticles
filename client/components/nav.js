@@ -36,6 +36,9 @@ const Nav = () => {
   const adminRouter = () => {
     return (
       <>
+        <Link href="/admin">
+          <a className="dropdown-item">Dashboard</a>
+        </Link>
         <Link href="/users">
           <a className="dropdown-item">Users</a>
         </Link>

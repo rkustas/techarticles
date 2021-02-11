@@ -138,8 +138,8 @@ const Links = ({
       limit,
     });
     setAllLinks([...allLinks, ...response.data.links]);
-    console.log("allLinks", allLinks);
-    console.log("response.data.links.length", response.data.links.length);
+    // console.log("allLinks", allLinks);
+    // console.log("response.data.links.length", response.data.links.length);
     setSize(response.data.links.length);
     setSkip(toSkip);
   };
@@ -173,16 +173,17 @@ const Links = ({
           loader={
             <img key={0} src="/static/images/loading_gif.png" alt="loading" />
           }
-        ></InfiniteScroll>
-        <div className="row">
-          <div className="col-md-8">{listOfLinks()}</div>
-          <div className="col-md-4">
-            <h2 className="lead text-center text-title">
-              Most popular in {category.name}
-            </h2>
-            <div className="p-3">{listOfPopularLinks()}</div>
+        >
+          <div className="row">
+            <div className="col-md-8">{listOfLinks()}</div>
+            <div className="col-md-4">
+              <h2 className="lead text-center text-title">
+                Most popular in {category.name}
+              </h2>
+              <div className="p-3">{listOfPopularLinks()}</div>
+            </div>
           </div>
-        </div>
+        </InfiniteScroll>
       </div>
     </Fragment>
   );
