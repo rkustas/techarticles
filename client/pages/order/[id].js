@@ -3,7 +3,6 @@ import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import { ProductContext } from "../../components/context/globalstate";
 import DetailOrder from "../../components/orderdetail";
-import { isAuth } from "../../helpers/auth";
 
 const OrderDetail = () => {
   const router = useRouter();
@@ -11,8 +10,8 @@ const OrderDetail = () => {
   // console.log(router);
 
   const { state, dispatch } = useContext(ProductContext);
-  const { orders } = state;
-  console.log(orders);
+  const { orders, auth } = state;
+  // console.log(orders);
 
   const [orderDetail, setOrderDetail] = useState([]);
 
@@ -20,9 +19,9 @@ const OrderDetail = () => {
     const newArr = orders.filter((order) => order._id === router.query.id);
     setOrderDetail(newArr);
   }, [orders]);
-  console.log(orderDetail);
+  // console.log(orderDetail);
 
-  if (!isAuth()) return null;
+  if (!auth.user) return null;
 
   return (
     <div className="my-3">

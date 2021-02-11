@@ -13,9 +13,9 @@ import { API } from "../config";
 import { useRouter } from "next/router";
 
 const Cart = ({ token }) => {
-  console.log(token);
+  // console.log(token);
   const { state, dispatch } = useContext(ProductContext);
-  const { cart, orders } = state;
+  const { cart, orders, auth } = state;
 
   // State
   const [total, setTotal] = useState(0);
@@ -29,7 +29,7 @@ const Cart = ({ token }) => {
   useEffect(() => {
     const getTotal = () => {
       const res = cart.reduce((prev, item) => {
-        return prev + item.Price * item.count;
+        return prev + item.price * item.quantity;
       }, 0);
       const resrounded = res.toFixed(2);
       setTotal(resrounded);
@@ -45,18 +45,25 @@ const Cart = ({ token }) => {
       const updateCart = async () => {
         for (const item of cartLocal) {
           const response = await axios.get(`${API}/store/${item._id}`);
-          const { _id, Name, Price, inStock, Image, sold, id } = response.data;
+          const {
+            _id,
+            name,
+            price,
+            inStock,
+            images,
+            sold,
+            productnumber,
+          } = response.data;
           if (inStock > 0) {
             newArr.push({
               _id,
-              Name,
-              Price,
-              Image,
-              inCart: true,
+              name,
+              price,
+              images,
               sold,
-              id,
+              productnumber,
               inStock,
-              count: item.count > inStock ? 1 : item.count,
+              quantity: item.quantity > inStock ? 1 : item.quantity,
             });
           }
         }
@@ -85,7 +92,11 @@ const Cart = ({ token }) => {
     dispatch({ type: "ADD_CART", payload: [] });
     const newOrder = {
       ...res.data.order,
-      user: { _id: isAuth()._id, email: isAuth().email, name: isAuth().name },
+      user: {
+        _id: auth.user._id,
+        email: auth.user.email,
+        name: auth.user.name,
+      },
     };
     dispatch({ type: "ADD_ORDERS", payload: [...orders, newOrder] });
 
@@ -99,6 +110,13 @@ const Cart = ({ token }) => {
   };
 
   const handlePayment = async () => {
+    if (!auth.user) {
+      router.push("/login");
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: "Please login to purchase an item." },
+      });
+    }
     if (!address || !mobile)
       return dispatch({
         type: "NOTIFY",
@@ -109,7 +127,7 @@ const Cart = ({ token }) => {
     let newCart = [];
     for (const item of cart) {
       const response = await axios.get(`${API}/store/${item._id}`);
-      if (response.data.inStock - item.count >= 0) {
+      if (response.data.inStock - item.quantity >= 0) {
         newCart.push(item);
       }
     }
@@ -136,19 +154,22 @@ const Cart = ({ token }) => {
 
   if (cart.length === 0) return <EmptyCart />;
   return (
-    <div className="row mx-auto">
+    <div
+      className="row mx-auto bg-white p-3"
+      style={{ border: "1px solid black" }}
+    >
       <Head>
         <title>Cart</title>
       </Head>
       <div className="col-md-8 text-secondary table-responsive my-3">
         <h1 className="text-2xl mb-5 text-uppercase">Shopping Cart</h1>
-        <table className="table my-3 bg-white">
+        <table className="table my-3">
           <tbody>
             {cart.length &&
-              cart.map((product) => (
+              cart.map((item) => (
                 <CartItem
-                  key={product._id}
-                  product={product}
+                  key={item._id}
+                  item={item}
                   dispatch={dispatch}
                   cart={cart}
                 />
@@ -189,7 +210,7 @@ const Cart = ({ token }) => {
                   Continue Shopping
                 </button>
               </Link>
-              <Link href={isAuth() ? "#!" : "/login"}>
+              <Link href={"#!"}>
                 <button
                   className="btn btn-outline-success"
                   onClick={handlePayment}

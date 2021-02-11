@@ -1,5 +1,5 @@
 // Dynamic id, only available through next.js the jwt token from auth link in registration email
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
@@ -7,18 +7,19 @@ import { API } from "../../../config";
 import { withRouter } from "next/router";
 import Layout from "../../../components/layout";
 import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
 
 const ActivateAccount = ({ router }) => {
   // Create state to store token
   const [state, setState] = useState({
     name: "",
     token: "",
-    buttonText: "Activate Account",
-    success: "",
-    error: "",
   });
+
+  const { dispatch } = useContext(ProductContext);
+
   // Destructure state variables
-  const { name, token, buttonText, success, error } = state;
+  const { name, token } = state;
 
   //   Grab the token from router so we can decode it and the username will be available, second parameter is a dependency and will run when router changes
   useEffect(() => {
@@ -34,9 +35,8 @@ const ActivateAccount = ({ router }) => {
   const clickSubmit = async (e) => {
     e.preventDefault();
     // console.log("activate account");
-    // Set button text state
-    setState({ ...state, buttonText: "Activating" });
-
+    // Set loading dispatch
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     // Try catch block for asynchrouse post to API endpoint
     try {
       const response = await axios.post(`${API}/register/activate`, { token });
@@ -45,38 +45,44 @@ const ActivateAccount = ({ router }) => {
         ...state,
         name: "",
         token: "",
-        buttonText: "Activated",
-        success: response.data.message,
+      });
+      dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
       });
     } catch (error) {
       //   console.log("account activate error", error);
       setState({
         ...state,
-        buttonText: "Activate Account",
-        error: error.response.data.error,
       });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Activate Account</title>
         </Head>
       </div>
       <div className="row">
-        <div className="col-md-6 offset-md-3">
+        <div
+          className="col-md-6 offset-md-3 bg-white p-5"
+          style={{ border: "1px solid black" }}
+        >
           <h1>Hello {name}, ready to activate your account?</h1>
           <br />
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
           <button className="btn btn-black btn-block" onClick={clickSubmit}>
-            {buttonText}
+            Activate Account
           </button>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

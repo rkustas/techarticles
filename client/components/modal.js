@@ -3,49 +3,129 @@ import { useContext } from "react";
 import { ProductContext } from "../components/context/globalstate";
 import axios from "axios";
 import { API } from "../config";
-import { getCookieFromBrowser } from "../helpers/auth";
+import { useRouter } from "next/router";
 
 const Modal = () => {
   const { state, dispatch } = useContext(ProductContext);
-  const { modal } = state;
+  const { modal, auth } = state;
   // Bringing in token
-  const token = getCookieFromBrowser("token");
-  const handleSubmit = async () => {
-    // if (modal.type === "ADD_USERS") {
-    //   const response = await axios.delete(`${API}/users/${modal.id}`, {
-    //     headers: {
-    //       authorization: `Bearer ${token}`,
-    //       contentType: "application/json",
-    //     },
-    //   });
-    //   // console.log(response);
-    //   if (response.error)
-    //     return dispatch({ type: "NOTIFY", payload: { error: response.error } });
-    //   return dispatch({
-    //     type: "NOTIFY",
-    //     payload: { success: response.data.msg },
-    //   });
-    // }
-    // if (modal.type === "ADD_CATEGORIES") {
-    //   const response = await axios.delete(
-    //     `${API}/productCategories/${modal.id}`,
-    //     {
-    //       headers: {
-    //         authorization: `Bearer ${token}`,
-    //         contentType: "application/json",
-    //       },
-    //     }
-    //   );
-    //   // console.log(response);
-    //   if (response.error)
-    //     return dispatch({ type: "NOTIFY", payload: { error: response.error } });
-    //   return dispatch({
-    //     type: "NOTIFY",
-    //     payload: { success: response.data.msg },
-    //   });
-    // }
-    dispatch(deleteItem(modal.data, modal.id, modal.type));
-    dispatch({ type: "ADD_MODAL", payload: {} });
+
+  const router = useRouter();
+
+  const deleteUser = async (item) => {
+    dispatch(deleteItem(item.data, item.id, item.type));
+    const response = await axios.delete(`${API}/users/${item.id}`, {
+      headers: {
+        authorization: `Bearer ${auth.token}`,
+        contentType: "application/json",
+      },
+    });
+    // console.log(response);
+    if (response.error)
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: response.error },
+      });
+
+    return dispatch({
+      type: "NOTIFY",
+      payload: { success: response.data.msg },
+    });
+  };
+
+  const deleteCategories = async (item) => {
+    try {
+      const response = await axios.delete(
+        `${API}/productCategories/${item.id}`,
+        {
+          headers: {
+            authorization: `Bearer ${auth.token}`,
+            contentType: "application/json",
+          },
+        }
+      );
+      // console.log(response);
+
+      dispatch(deleteItem(item.data, item.id, item.type));
+
+      return dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
+    } catch (error) {
+      // console.log(error.response);
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data },
+        });
+    }
+  };
+
+  const deleteProduct = async (item) => {
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
+    const response = await axios.delete(`${API}/store/${item.id}`, {
+      headers: {
+        authorization: `Bearer ${auth.token}`,
+        contentType: "application/json",
+      },
+    });
+    // console.log(response);
+    if (response.error)
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: response.error },
+      });
+
+    dispatch({
+      type: "NOTIFY",
+      payload: { success: response.data.msg },
+    });
+    return router.push("/");
+  };
+
+  const deleteCartItem = (item) => {
+    dispatch(deleteItem(item.data, item.id, item.type));
+    dispatch({ type: "NOTIFY", payload: "Item removed from cart!" });
+  };
+
+  const linkCategory = async (item) => {
+    try {
+      dispatch(deleteItem(item.data, item.id, item.type));
+      const response = await axios.delete(`${API}/category/${item.slug}`, {
+        // Only authorized user can delete
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+          contentType: "application/json",
+        },
+      });
+      // console.log(response);
+
+      return dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
+    } catch (error) {
+      // console.log(error.response);
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data },
+        });
+    }
+  };
+
+  const handleSubmit = () => {
+    if (modal.length !== 0) {
+      for (const item of modal) {
+        if (item.type === "ADD_CART") deleteCartItem(item);
+        if (item.type === "ADD_USERS") deleteUser(item);
+        if (item.type === "ADD_CATEGORIES") deleteCategories(item);
+        if (item.type === "DELETE_PRODUCT") deleteProduct(item);
+        if (item.type === "ADD_ARTICLE_CAT") linkCategory(item);
+        dispatch({ type: "ADD_MODAL", payload: [] });
+      }
+    }
   };
   return (
     <div
@@ -60,7 +140,7 @@ const Modal = () => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title text-capitalize" id="exampleModalLabel">
-              {modal.name}
+              {modal.length !== 0 && modal[0].name}
             </h5>
             <button
               type="button"
@@ -86,7 +166,7 @@ const Modal = () => {
               className="btn btn-primary"
               data-dismiss="modal"
             >
-              Cancel{" "}
+              Cancel
             </button>
           </div>
         </div>

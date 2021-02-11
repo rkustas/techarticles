@@ -5,14 +5,12 @@ import { updateItem } from "../../components/context/actions";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { API } from "../../config";
-import { getCookieFromBrowser, isAuth } from "../../helpers/auth";
+import { getCookieFromBrowser } from "../../helpers/auth";
 
 const EditUser = () => {
   const { state, dispatch } = useContext(ProductContext);
-  const { users } = state;
+  const { users, auth } = state;
   const router = useRouter();
-
-  const token = getCookieFromBrowser("token");
 
   const [editUser, setEditUser] = useState([]);
   const [checkAdmin, setCheckAdmin] = useState(false);
@@ -33,43 +31,47 @@ const EditUser = () => {
   };
 
   const handleSubmit = async () => {
-    //   Checking role
-    let role = checkAdmin ? "admin" : "subscriber";
-    // If remainder isn't 0, turn loading on and make a call to update the user
-    if (num % 2 !== 0) {
-      dispatch({ type: "NOTIFY", payload: { loading: true } });
-      const response = await axios.patch(
-        `${API}/users/${editUser._id}`,
-        { role },
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-            contentType: "application/json",
-          },
-        }
-      );
-      //   console.log(response);
-      if (response.error) {
-        return dispatch({ type: "NOTIFY", payload: { error: response.error } });
-      }
-
-      // Updating state reducer
-      dispatch(
-        updateItem(
-          users,
-          editUser._id,
+    try {
+      //   Checking role
+      let role = checkAdmin ? "admin" : "subscriber";
+      // If remainder isn't 0, turn loading on and make a call to update the user
+      if (num % 2 !== 0) {
+        dispatch({ type: "NOTIFY", payload: { loading: true } });
+        const response = await axios.patch(
+          `${API}/users/${editUser._id}`,
+          { role },
           {
-            ...editUser,
-            role,
-          },
-          "ADD_USERS"
-        )
-      );
-      //   Display success message
-      return dispatch({
-        type: "NOTIFY",
-        payload: { success: response.data.msg },
-      });
+            headers: {
+              authorization: `Bearer ${auth.token}`,
+              contentType: "application/json",
+            },
+          }
+        );
+
+        // Updating state reducer
+        dispatch(
+          updateItem(
+            users,
+            editUser._id,
+            {
+              ...editUser,
+              role,
+            },
+            "ADD_USERS"
+          )
+        );
+        //   Display success message
+        return dispatch({
+          type: "NOTIFY",
+          payload: { success: response.data.msg },
+        });
+      }
+    } catch (error) {
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
@@ -85,7 +87,10 @@ const EditUser = () => {
           </i>
         </button>
       </div>
-      <div className="col-md-4 mx-auto my-4">
+      <div
+        className="col-md-4 mx-auto my-4 bg-white p-5 text-center"
+        style={{ border: "1px solid black" }}
+      >
         <h2 className="text-uppercase text-secondary">Edit User</h2>
         <div className="form-group">
           <label htmlFor="name" className="d-block">

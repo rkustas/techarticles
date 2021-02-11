@@ -1,5 +1,5 @@
 // All Imports
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Layout from "../../../components/layout";
 var React = require("react");
 import axios from "axios";
@@ -8,57 +8,51 @@ import { API } from "../../../config";
 import { getCookie, isAuth } from "../../../helpers/auth";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
 
 // Received token props from getInitalProps function down below
-const Update = ({ oldLink, token }) => {
+const Update = ({ oldLink }) => {
   // Create state
-  const [state, setState] = useState({
+  const [updateLink, setUpdateLink] = useState({
     title: oldLink.title,
     url: oldLink.url,
     categories: oldLink.categories,
     loadedCategories: [],
-    success: "",
-    error: "",
     type: oldLink.type,
     medium: oldLink.medium,
   });
 
-  const {
-    title,
-    url,
-    categories,
-    loadedCategories,
-    success,
-    error,
-    type,
-    medium,
-  } = state;
+  const { state, dispatch } = useContext(ProductContext);
+  const { auth } = state;
+
+  const { title, url, categories, loadedCategories, type, medium } = updateLink;
 
   // Load categories when component mounts, run whenever success
   useEffect(() => {
     loadCategories();
-  }, [success]);
+  }, [categories]);
 
   // Load categories
   const loadCategories = async () => {
     const response = await axios.get(`${API}/categories`);
-    setState({ ...state, loadedCategories: response.data });
+    setUpdateLink({ ...updateLink, loadedCategories: response.data });
   };
 
   const handleTitleChange = (e) => {
-    setState({ ...state, title: e.target.value, error: "", success: "" });
+    setUpdateLink({ ...updateLink, title: e.target.value });
   };
 
   const handleURLChange = (e) => {
-    setState({ ...state, url: e.target.value, error: "", success: "" });
+    setUpdateLink({ ...updateLink, url: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     // console.table({ title, url, categories, type, medium });
     // Update Link based on logged in user role
     let dynamicUpdateUrl;
-    if (isAuth() && isAuth().role === "admin") {
+    if (auth.user && auth.user.role === "admin") {
       dynamicUpdateUrl = `${API}/link/admin/${oldLink._id}`;
     } else {
       dynamicUpdateUrl = `${API}/link/${oldLink._id}`;
@@ -69,23 +63,40 @@ const Update = ({ oldLink, token }) => {
         { title, url, categories, type, medium },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${auth.token}`,
           },
         }
       );
-      setState({ ...state, success: "Link is updated" });
+      return dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
     } catch (error) {
-      console.log("LINK Update ERROR", error);
-      setState({ ...state, error: error.response.data.error });
+      // console.log("LINK Update ERROR", error);
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
   const handleMediumClick = (e) => {
-    setState({ ...state, medium: e.target.value, success: "", error: "" });
+    setUpdateLink({
+      ...updateLink,
+      medium: e.target.value,
+      success: "",
+      error: "",
+    });
   };
 
   const handleTypeClick = (e) => {
-    setState({ ...state, type: e.target.value, success: "", error: "" });
+    setUpdateLink({
+      ...updateLink,
+      type: e.target.value,
+      success: "",
+      error: "",
+    });
   };
 
   const showMedium = () => (
@@ -95,7 +106,7 @@ const Update = ({ oldLink, token }) => {
           {/* If handleTypeClick returns video then video will be checked */}
           <input
             type="radio"
-            onClick={handleMediumClick}
+            onChange={handleMediumClick}
             checked={medium === "video"}
             value="video"
             className="form-check-input"
@@ -109,13 +120,39 @@ const Update = ({ oldLink, token }) => {
           {/* If handleTypeClick returns book then book will be checked*/}
           <input
             type="radio"
-            onClick={handleMediumClick}
+            onChange={handleMediumClick}
             checked={medium === "book"}
             value="book"
             className="form-check-input"
             name="medium"
           />{" "}
           Book
+        </label>
+      </div>
+      <div className="form-check ml-3">
+        <label className="form-check-label">
+          <input
+            type="radio"
+            onChange={handleMediumClick}
+            checked={medium === "blog post"}
+            value="blog post"
+            className="form-check-input"
+            name="medium"
+          />{" "}
+          Blog Post
+        </label>
+      </div>
+      <div className="form-check ml-3">
+        <label className="form-check-label">
+          <input
+            type="radio"
+            onChange={handleMediumClick}
+            checked={medium === "article"}
+            value="article"
+            className="form-check-input"
+            name="medium"
+          />{" "}
+          Article
         </label>
       </div>
     </React.Fragment>
@@ -128,7 +165,7 @@ const Update = ({ oldLink, token }) => {
           {/* If handleTypeClick returns free then free will be checked */}
           <input
             type="radio"
-            onClick={handleTypeClick}
+            onChange={handleTypeClick}
             checked={type === "free"}
             value="free"
             className="form-check-input"
@@ -142,7 +179,7 @@ const Update = ({ oldLink, token }) => {
           {/* If handleTypeClick returns paid then paid will be checked*/}
           <input
             type="radio"
-            onClick={handleTypeClick}
+            onChange={handleTypeClick}
             checked={type === "paid"}
             value="paid"
             className="form-check-input"
@@ -167,7 +204,7 @@ const Update = ({ oldLink, token }) => {
       all.splice(clickedCategory, 1);
     }
     console.log("all >> categories", all);
-    setState({ ...state, categories: all, success: "", error: "" });
+    setUpdateLink({ ...updateLink, categories: all });
   };
 
   //   Show Category checkbox
@@ -212,62 +249,60 @@ const Update = ({ oldLink, token }) => {
       </div>
       <div>
         <button
-          disabled={!token}
-          className="btn btn-outline-dark"
+          disabled={!auth.token}
+          className="btn btn-outline-dark btn-block"
           type="submit"
         >
-          {isAuth() || token ? "Update" : "Login to update"}
+          {auth.user || auth.token ? "Update" : "Login to update"}
         </button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
-      <div>
+    <>
+      <div className={"bg-white p-5"} style={{ border: "1px solid black" }}>
         <Head>
           <title>Link Detail</title>
         </Head>
-      </div>
-      <div className="row">
-        <div className="col-md-12">
-          <h1>Update a Link/URL</h1>
-          <br />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-4">
-          <div className="form-group">
-            <label className="text-muted ml-4">Category</label>
-            <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
-              {showCategories()}
-            </ul>
-          </div>
-          <div className="form-group">
-            <label className="text-muted ml-4">Type</label>
-            {showTypes()}
-          </div>
-          <div className="form-group">
-            <label className="text-muted ml-4">Medium</label>
-            {showMedium()}
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Update a Link/URL</h1>
+            <br />
           </div>
         </div>
-        <div className="col-md-8">
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
-          {submitLinkForm()}
+        <div className="row">
+          <div className="col-md-4">
+            <div className="form-check">
+              <label className="text-muted ml-4">Category</label>
+              <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
+                {showCategories()}
+              </ul>
+            </div>
+            <div className="form-group">
+              <label className="text-muted ml-4">Type</label>
+              <hr />
+              {showTypes()}
+            </div>
+            <div className="form-group">
+              <label className="text-muted ml-4">Medium</label>
+              <hr />
+              {showMedium()}
+            </div>
+          </div>
+          <div className="col-md-8">{submitLinkForm()}</div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
 // Use getInitalProps to get the cookie information and token
-Update.getInitialProps = async ({ req, token, query }) => {
+Update.getInitialProps = async ({ req, query }) => {
   const response = await axios.get(`${API}/link/${query.id}`);
 
   //   Category in response now
-  return { oldLink: response.data, token };
+  return { oldLink: response.data };
 };
 
 export default withUser(Update);

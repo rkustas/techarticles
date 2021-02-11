@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Layout from "../../../components/layout";
+import Layout from "../../../components/Layout";
 import Link from "next/link";
 import axios from "axios";
 import renderHTML from "react-render-html";
@@ -8,10 +8,8 @@ import { API } from "../../../config";
 import InfiniteScroll from "react-infinite-scroller";
 import withAdmin from "../../withAdmin";
 import { getCookie } from "../../../helpers/auth";
-import Head from "next/head";
 
 const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
-  console.log(token);
   const [allLinks, setAllLinks] = useState(links);
   const [limit, setLimit] = useState(linksLimit);
   const [skip, setSkip] = useState(0);
@@ -19,10 +17,9 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
 
   const confirmDelete = (e, id) => {
     e.preventDefault();
-    // Browser alert to inform user
-    let answer = window.confirm(`Are you sure you want to delete?`);
+    // console.log('delete > ', slug);
+    let answer = window.confirm("Are you sure you want to delete?");
     if (answer) {
-      // Send request to server to delete
       handleDelete(id);
     }
   };
@@ -30,18 +27,17 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
   const handleDelete = async (id) => {
     try {
       const response = await axios.delete(`${API}/link/admin/${id}`, {
-        // Only authorized user can delete
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Link delete success", response);
-      // if we are in the browser, then reload the page
-      window.location.href = window.location.href;
+      console.log("LINK DELETE SUCCESS ", response);
+      process.browser && window.location.reload();
     } catch (error) {
-      console.log("Link delete", error);
+      console.log("LINK DELETE ", error);
     }
   };
+
   const listOfLinks = () =>
     allLinks.map((l, i) => (
       <div key={i} className="row alert alert-primary p-2">
@@ -62,6 +58,7 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
             {l.clicks} clicks
           </span>
         </div>
+
         <div className="col-md-12">
           <span className="badge text-dark">
             {l.type} / {l.medium}
@@ -71,6 +68,7 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
               {c.name}
             </span>
           ))}
+
           <span
             onClick={(e) => confirmDelete(e, l._id)}
             className="badge text-danger pull-right"
@@ -79,7 +77,7 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
           </span>
           <Link href={`/user/link/${l._id}`}>
             <a>
-              <span className="badge text-dark pull-right">Update</span>
+              <span className="badge text-warning pull-right">Update</span>
             </a>
           </Link>
         </div>
@@ -99,21 +97,15 @@ const Links = ({ token, links, totalLinks, linksLimit, linkSkip }) => {
       }
     );
 
-    setAllLinks([...allLinks, response.data[0]]);
+    setAllLinks([...allLinks, ...response.data]);
     // console.log('allLinks', allLinks);
     // console.log('response.data.links.length', response.data.links.length);
     setSize(response.data.length);
     setSkip(toSkip);
   };
-  console.log(allLinks);
 
   return (
     <Layout>
-      <div>
-        <Head>
-          <title>Admin Link List</title>
-        </Head>
-      </div>
       <div className="row">
         <div className="col-md-12">
           <h1 className="display-4 font-weight-bold">All Links</h1>

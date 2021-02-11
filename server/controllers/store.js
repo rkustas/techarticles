@@ -1,50 +1,79 @@
 // Imports
 const Store = require("../models/store");
 
-exports.create = (req, res) => {
+class APIfeatures {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
+  filtering() {
+    const queryObj = { ...this.queryString };
+    const excludeFields = ["page", "sort", "limit"];
+    excludeFields.forEach((el) => delete queryObj[el]);
+
+    if (queryObj.category !== "all")
+      this.query.find({ category: queryObj.category });
+    if (queryObj.name !== "all")
+      this.query.find({ name: { $regex: queryObj.name } });
+    this.query.find();
+    return this;
+  }
+
+  sorting() {
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(",").join(" ");
+      this.query = this.query.sort(sortBy);
+    } else {
+      this.query = this.query.sort("-createdAt");
+    }
+    return this;
+  }
+
+  paginating() {
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 6;
+    const skip = (page - 1) * limit;
+    this.query = this.query.skip(skip).limit(limit);
+    return this;
+  }
+}
+
+exports.create = async (req, res) => {
   //
   try {
     const {
-      product_id,
-      Name,
-      Price,
+      name,
+      price,
+      description,
       inStock,
-      BodyLocation,
-      Category,
-      CompanyName,
+      bodyLocation,
+      category,
+      companyName,
+      companyCity,
+      companyUSState,
+      companyCountry,
       productnumber,
-      base64,
+      images,
     } = req.body;
-    const product = Store.findOne({ product_id });
-    if (product)
-      return res.status(400).json({ err: "This product already exists" });
-
-    const newnumber = Store.findOne({ productnumber });
-    if (newnumber)
-      return res.status(400).json({ err: "This productnumber already exists" });
 
     const newProduct = new Store({
-      product_id,
-      Name: Name.toLowerCase(),
-      Price,
+      name: name.toLowerCase(),
+      price,
+      description,
       inStock,
-      BodyLocation,
-      Category,
-      CompanyName,
+      bodyLocation,
+      category,
+      companyName,
+      companyCity,
+      companyUSState,
+      companyCountry,
       productnumber,
-      Image: base64,
+      images,
     });
 
-    newProduct.save.exec((err, data) => {
-      if (err) {
-        return res.status(400).json({
-          error: "Error creating product",
-        });
-      }
-      res.json({
-        msg: "Success!  Created product!",
-        data,
-      });
+    await newProduct.save();
+    res.json({
+      msg: "Success!  Created product!",
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -63,63 +92,76 @@ exports.read = (req, res) => {
   });
 };
 
-exports.list = (req, res) => {
-  //List all of the store items
-  Store.find({}).exec((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: "Items could not load",
-      });
-    }
-    res.json(data);
-  });
+exports.list = async (req, res) => {
+  try {
+    //List all of the store items
+    const features = new APIfeatures(Store.find(), req.query)
+      .filtering()
+      .sorting()
+      .paginating();
+
+    const products = await features.query;
+    res.json({
+      status: "success",
+      result: products.length,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   //
   try {
     const { id } = req.params;
     const {
-      product_id,
-      Name,
-      Price,
+      name,
+      price,
+      description,
       inStock,
-      BodyLocation,
-      Category,
-      CompanyName,
+      bodyLocation,
+      category,
+      companyName,
+      companyCity,
+      companyUSState,
+      companyCountry,
       productnumber,
-      image,
+      images,
     } = req.body;
 
-    Store.findOneAndUpdate(
+    await Store.findOneAndUpdate(
       { _id: id },
       {
-        product_id,
-        Name,
-        Price,
+        name: name.toLowerCase(),
+        price,
+        description,
         inStock,
-        BodyLocation,
-        Category,
-        CompanyName,
+        bodyLocation,
+        category,
+        companyName,
+        companyCity,
+        companyUSState,
+        companyCountry,
         productnumber,
-        image,
+        images,
       }
-    ).exec((err, data) => {
-      if (err) {
-        return res.status(400).json({
-          error: "Error updating product",
-        });
-      }
-      res.json({
-        msg: "Success!  Updated product!",
-        data,
-      });
-    });
+    );
+
+    res.json({ msg: "Success! Product Updated" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
 
-exports.remove = (req, res) => {
+exports.remove = async (req, res) => {
   //
+  try {
+    const { id } = req.params;
+
+    await Store.findByIdAndDelete(id);
+    res.json({ msg: "Product Deleted" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };

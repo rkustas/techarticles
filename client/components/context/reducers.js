@@ -37,6 +37,11 @@ const reducers = (state, action) => {
         ...state,
         categories: action.payload,
       };
+    case ACTIONS.ADD_ARTICLE_CAT:
+      return {
+        ...state,
+        artCategories: action.payload,
+      };
 
     default:
       return state;

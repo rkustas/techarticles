@@ -2,11 +2,12 @@ import { useContext, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import { ProductContext } from "../components/context/globalstate";
+import Title from "../components/title";
 
 const UsersOrders = () => {
   const { state, dispatch } = useContext(ProductContext);
-  const { orders, users } = state;
-  console.log(orders, users);
+  const { orders } = state;
+  // console.log(orders, users);
 
   const listOfOrders = () =>
     orders.map((order) => (
@@ -42,8 +43,8 @@ const UsersOrders = () => {
       <Head>
         <title>My Orders</title>
       </Head>
-      <div className="bg-white p-3">
-        <h3 className="text-uppercase">Orders</h3>
+      <Title title="Orders"></Title>
+      <div className="bg-white p-3" style={{ border: "1px solid black" }}>
         <div className="my-3 table-responsive">
           <table className="table-bordered table-hover w-100 text-uppercase">
             <thead className="bg-light">

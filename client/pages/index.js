@@ -27,7 +27,7 @@ const Home = ({ categories }) => {
     loadPopular();
   };
 
-  console.log(popular);
+  // console.log(popular);
 
   const listOfLinks = () =>
     popular.map((l, i) => (
@@ -87,8 +87,10 @@ const Home = ({ categories }) => {
         </a>
       </Link>
     ));
+  if (popular.length === 0) return null;
+
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Home</title>
@@ -109,7 +111,7 @@ const Home = ({ categories }) => {
         <h2 className="font-weight-bold pb-3">Trending</h2>
         <div className="col-md-12 overflow-hidden">{listOfLinks()}</div>
       </div>
-    </Layout>
+    </>
   );
 };
 

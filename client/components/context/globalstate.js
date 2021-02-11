@@ -1,9 +1,9 @@
 import { createContext } from "react";
 import React, { useReducer, useEffect } from "react";
 import reducers from "./reducers";
-import { getCookieFromBrowser, isAuth } from "../../helpers/auth";
 import axios from "axios";
 import { API } from "../../config";
+import { getCookieFromBrowser, isAuth } from "../../helpers/auth";
 
 export const ProductContext = createContext();
 
@@ -12,31 +12,50 @@ export const ProductProvider = ({ children }) => {
     notify: {},
     auth: {},
     cart: [],
-    modal: {},
+    modal: [],
     orders: [],
     users: [],
     categories: [],
+    artCategories: [],
+    allLinks: [],
   };
   const [state, dispatch] = useReducer(reducers, initialState);
-  const { cart } = state;
+  const { cart, auth } = state;
 
   const token = getCookieFromBrowser("token");
 
   useEffect(async () => {
-    if (token) {
-      const response = await axios.get(`${API}/productCategories`, {
-        headers: {
-          authorization: `Bearer ${token}`,
-          contentType: "application/json",
+    if (token && isAuth()) {
+      dispatch({
+        type: "AUTH",
+        payload: {
+          token: token,
+          user: isAuth(),
         },
       });
-      console.log(response);
-      if (response.error)
-        return dispatch({ type: "NOTIFY", payload: { error: response.error } });
-      dispatch({ type: "ADD_CATEGORIES", payload: response.data.categories });
-    } else {
-      dispatch({ type: "ADD_CATEGORIES", payload: [] });
     }
+    const responseCategories = await axios.get(`${API}/productCategories`);
+    // console.log(response);
+    if (responseCategories.error)
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: responseCategories.error },
+      });
+    dispatch({
+      type: "ADD_CATEGORIES",
+      payload: responseCategories.data.categories,
+    });
+    const responseArticle = await axios.get(`${API}/categories`);
+    // console.log(responseArticle);
+    if (responseArticle.error)
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: responseArticle.error },
+      });
+    dispatch({
+      type: "ADD_ARTICLE_CAT",
+      payload: responseArticle.data,
+    });
   }, []);
 
   useEffect(() => {
@@ -53,10 +72,10 @@ export const ProductProvider = ({ children }) => {
   }, [cart]);
 
   useEffect(async () => {
-    if (token) {
+    if (auth.token) {
       const response = await axios.get(`${API}/user`, {
         headers: {
-          authorization: `Bearer ${token}`,
+          authorization: `Bearer ${auth.token}`,
           contentType: "application/json",
         },
       });
@@ -66,15 +85,15 @@ export const ProductProvider = ({ children }) => {
       }
       dispatch({ type: "ADD_ORDERS", payload: response.data.orders });
 
-      if (isAuth().role === "admin") {
+      if (auth.user.role === "admin") {
         const userResponse = await axios.get(`${API}/users`, {
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${auth.token}`,
             contentType: "application/json",
           },
         });
         // console.log(response);
-        if (response.err) {
+        if (userResponse.err) {
           return dispatch({
             type: "NOTIFY",
             payload: { error: userResponse.err },
@@ -86,7 +105,7 @@ export const ProductProvider = ({ children }) => {
       dispatch({ type: "ADD_ORDERS", payload: [] });
       dispatch({ type: "ADD_USERS", payload: [] });
     }
-  }, [token]);
+  }, [auth.token]);
 
   return (
     <ProductContext.Provider value={{ state, dispatch }}>

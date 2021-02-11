@@ -46,7 +46,10 @@ exports.create = (req, res) => {
         error: "Link already exists",
       });
     }
-    res.json(data);
+    res.json({
+      msg: "Link Created!",
+      data,
+    });
 
     // Use AWS SES to send mass email for new link categories
     // Find all users based on one or more categories
@@ -82,7 +85,6 @@ exports.create = (req, res) => {
 };
 
 exports.list = (req, res) => {
-  // For pagination and infinite scroll
   let limit = req.body.limit ? parseInt(req.body.limit) : 10;
   let skip = req.body.skip ? parseInt(req.body.skip) : 0;
 
@@ -98,7 +100,6 @@ exports.list = (req, res) => {
           error: "Could not list links",
         });
       }
-
       res.json(data);
     });
 };
@@ -112,6 +113,21 @@ exports.read = (req, res) => {
     }
     res.json(data);
   });
+};
+
+exports.listAll = async (req, res) => {
+  try {
+    await Link.find({}).exec((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Could not list links",
+        });
+      }
+      res.json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 exports.update = (req, res) => {
@@ -128,7 +144,10 @@ exports.update = (req, res) => {
           error: "Error updating link",
         });
       }
-      res.json(updated);
+      res.json({
+        updated,
+        msg: "Link updated!",
+      });
     }
   );
 };

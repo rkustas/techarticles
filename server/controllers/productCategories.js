@@ -1,4 +1,5 @@
 const productCategory = require("../models/productCategories");
+const Store = require("../models/store");
 
 exports.create = async (req, res) => {
   //Create a product category
@@ -63,7 +64,14 @@ exports.remove = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const products = await Store.findOne({ category: id });
+    if (products)
+      return res
+        .status(400)
+        .send("Please delete all products with a relationship");
+
     await productCategory.findByIdAndDelete(id);
+
     res.json({ msg: "Success!  Category deleted!" });
   } catch (error) {
     return res.status(500).json({ error: error.message });

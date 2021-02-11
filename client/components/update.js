@@ -14,11 +14,8 @@ const Profile = ({ user, token }) => {
     name: user.name,
     email: user.email,
     password: "",
-    error: "",
     avatar: "",
     imgURL: "",
-    success: "",
-    buttonText: "Update",
     loadedCategories: [],
     categories: user.categories,
   });
@@ -31,10 +28,7 @@ const Profile = ({ user, token }) => {
     email,
     password,
     avatar,
-    error,
-    success,
     imgURL,
-    buttonText,
     loadedCategories,
     categories,
   } = state;
@@ -42,12 +36,20 @@ const Profile = ({ user, token }) => {
   // Load categories when component mounts, run whenever success changes
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [categories]);
 
   // Load categories
   const loadCategories = async () => {
-    const response = await axios.get(`${API}/categories`);
-    setState({ ...state, loadedCategories: response.data });
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setState({ ...state, loadedCategories: response.data });
+    } catch (error) {
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data },
+        });
+    }
   };
 
   const handleToggle = (c) => () => {
@@ -63,7 +65,7 @@ const Profile = ({ user, token }) => {
       all.splice(clickedCategory, 1);
     }
     // console.log("all >> categories", all);
-    setState({ ...state, categories: all, success: "", error: "" });
+    setState({ ...state, categories: all });
   };
 
   //   Show Category checkbox
@@ -89,16 +91,13 @@ const Profile = ({ user, token }) => {
     setState({
       ...state,
       [name]: e.target.value,
-      error: "",
-      success: "",
-      buttonText: "Update",
     });
   };
 
   // Asynchronous call and response upon submitting form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setState({ ...state, buttonText: "Updating" });
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     try {
       const response = await axios.put(
         `${API}/user`,
@@ -115,24 +114,36 @@ const Profile = ({ user, token }) => {
         }
       );
       // console.log(response);
-      updateUser(response.data, () => {
+      updateUser(response.data.updated, () => {
         // If valid response, then reset the state and return a success message
         setState({
           ...state,
           avatar: "",
-          buttonText: "Updated",
-          success: "Profile updated successfully",
+        });
+        dispatch({
+          type: "AUTH",
+          payload: {
+            token: token,
+            user: response.data.updated,
+          },
+        });
+        return dispatch({
+          type: "NOTIFY",
+          payload: { success: response.data.msg },
         });
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       // If error in response, return current state, and error message
       setState({
         ...state,
         avatar: "",
-        buttonText: "Update",
-        error: error.response.data.error,
       });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
@@ -163,7 +174,7 @@ const Profile = ({ user, token }) => {
       100,
       0,
       (uri) => {
-        console.log(uri);
+        // console.log(uri);
         setState({ ...state, avatar: uri, imgURL: file });
       },
       "base64"
@@ -233,7 +244,7 @@ const Profile = ({ user, token }) => {
         </ul>
       </div>
       <div className="form-group text-center">
-        <button className="btn btn-outline-dark btn-block">{buttonText}</button>
+        <button className="btn btn-outline-dark btn-block">Update</button>
       </div>
     </form>
   );
@@ -241,8 +252,6 @@ const Profile = ({ user, token }) => {
   return (
     <>
       <br />
-      {success && showSuccessMessage(success)}
-      {error && showErrorMessage(error)}
       {updateForm()}
     </>
   );

@@ -3,68 +3,55 @@ const mongoose = require("mongoose");
 // store schema
 const storeSchema = new mongoose.Schema(
   {
-    Name: {
+    name: {
       type: String,
       required: true,
       trim: true,
     },
-    Price: {
+    price: {
       type: Number,
       required: true,
       trim: true,
     },
-    BodyLocation: {
+    bodyLocation: {
       type: String,
       required: true,
     },
-    Category: {
+    category: {
       type: String,
       required: true,
     },
-    CompanyName: {
+    description: {
       type: String,
       required: true,
     },
-    CompanyURL: {
+    companyName: {
       type: String,
+      required: true,
     },
-    CompanyMappingLocation: {
+    companyCity: {
       type: String,
+      required: true,
     },
-    CompanyCity: {
+    companyUSState: {
       type: String,
+      required: true,
     },
-    CompanyUSState: {
+    companyCountry: {
       type: String,
-    },
-    CompanyCountry: {
-      type: String,
-    },
-    Source: {
-      type: String,
-    },
-    Link: {
-      type: String,
-    },
-    Duplicatenote1: {
-      type: String,
+      required: true,
     },
     productnumber: {
       type: Number,
       required: true,
     },
-    Image: {
-      type: String,
+    images: {
+      type: Array,
       required: true,
     },
-    inCart: {
+    checked: {
       type: Boolean,
-    },
-    count: {
-      type: Number,
-    },
-    total: {
-      type: Number,
+      default: false,
     },
     inStock: {
       type: Number,

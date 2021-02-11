@@ -6,6 +6,7 @@ export const ACTIONS = {
   ADD_ORDERS: "ADD_ORDERS",
   ADD_USERS: "ADD_USERS",
   ADD_CATEGORIES: "ADD_CATEGORIES",
+  ADD_ARTICLE_CAT: "ADD_ARTICLE_CAT",
 };
 
 export const addToCart = (product, cart) => {
@@ -22,7 +23,7 @@ export const addToCart = (product, cart) => {
 
   return {
     type: "ADD_CART",
-    payload: [...cart, { ...product, count: 1, inCart: true }],
+    payload: [...cart, { ...product, quantity: 1 }],
   };
 };
 
@@ -30,7 +31,7 @@ export const decrease = (data, id) => {
   const newData = [...data];
   newData.forEach((item) => {
     if (item._id === id) {
-      item.count -= 1;
+      item.quantity -= 1;
     }
   });
   return { type: "ADD_CART", payload: newData };
@@ -40,7 +41,7 @@ export const increase = (data, id) => {
   const newData = [...data];
   newData.forEach((item) => {
     if (item._id === id) {
-      item.count += 1;
+      item.quantity += 1;
     }
   });
   return { type: "ADD_CART", payload: newData };

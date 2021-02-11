@@ -1,29 +1,31 @@
 // Dynamic id, only available through next.js the jwt token from auth link in registration email
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import Router from "next/router";
 import Layout from "../../../components/layout";
 import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
 
 const forgotPassword = () => {
   // Create state to store token
   const [state, setState] = useState({
     email: "",
-    buttonText: "Send Email",
-    success: "",
-    error: "",
   });
+
+  const { dispatch } = useContext(ProductContext);
+
   // Destructure state variables
-  const { email, buttonText, success, error } = state;
+  const { email } = state;
 
   const handleChange = (e) => {
-    setState({ ...state, email: e.target.value, success: "", error: "" });
+    setState({ ...state, email: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     // console.log("Post email to", email);
     try {
       const response = await axios.put(`${API}/forgot-password`, { email });
@@ -31,55 +33,60 @@ const forgotPassword = () => {
       setState({
         ...state,
         email: "",
-        buttonText: "Email Sent",
-        success: response.data.message,
+      });
+      dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
       });
     } catch (error) {
-      console.log("FORGOT PW ERROR", error);
+      // console.log("FORGOT PW ERROR", error);
       setState({
         ...state,
-        buttonText: "Send Email",
-        error: error.response.data.error,
       });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
   const passwordForgotForm = () => (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
+        <label htmlFor="email">Email</label>
         <input
           type="email"
           className="form-control"
           onChange={handleChange}
           value={email}
-          placeholder="Type your email"
-          required
         />
       </div>
       <div>
-        <button className="btn btn-outline-dark">{buttonText}</button>
+        <button className="btn btn-dark btn-block">Send Email</button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Forgot Password</title>
         </Head>
       </div>
       <div className="row">
-        <div className="col-md-6 offset-md-3">
+        <div
+          className="col-md-6 offset-md-3 bg-white p-5"
+          style={{ border: "1px solid black" }}
+        >
           <h1>Forgot Password</h1>
           <br />
           {/* If successful show success message */}
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
           {passwordForgotForm()}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

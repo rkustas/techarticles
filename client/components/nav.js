@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import CartIcon from "../components/cart/carticon";
-import { isAuth, logout } from "../helpers/auth";
+import { removeLocalStorage, removeCookie } from "../helpers/auth";
+import { useContext } from "react";
+import { ProductContext } from "../components/context/globalstate";
+import { API } from "../config";
+import Cookie from "js-cookie";
 
 const Nav = () => {
-  // console.log(isAuth());
+  const { state, dispatch } = useContext(ProductContext);
+  const { auth } = state;
+  // console.log(auth);
   const router = useRouter();
   const isActive = (r) => {
     if (r === router.pathname) {
@@ -12,6 +18,77 @@ const Nav = () => {
     } else {
       return "";
     }
+  };
+
+  const handleLogout = () => {
+    // Clear information from localstorage and cookie
+    removeLocalStorage("user");
+    removeCookie("token");
+    Cookie.remove("refreshToken", { path: `${API}/createToken` });
+    localStorage.removeItem("firstLogin");
+    dispatch({ type: "AUTH", payload: {} });
+    dispatch({ type: "NOTIFY", payload: { success: "Logged out!" } });
+
+    // Redirect
+    return router.push("/");
+  };
+
+  const adminRouter = () => {
+    return (
+      <>
+        <Link href="/users">
+          <a className="dropdown-item">Users</a>
+        </Link>
+        <Link href="/create">
+          <a className="dropdown-item">Products</a>
+        </Link>
+        <Link href="/categories">
+          <a className="dropdown-item">Categories</a>
+        </Link>
+      </>
+    );
+  };
+
+  const loggedRouter = () => {
+    return (
+      <li className="nav-item dropdown">
+        <a
+          className="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdownMenuLink"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <img
+            src={auth.user.avatar}
+            alt={auth.user.avatar}
+            style={{
+              borderRadius: "50%",
+              width: "30px",
+              height: "30px",
+              transform: "translateY(-3px)",
+              marginRight: "3px",
+            }}
+          />{" "}
+          {auth.user.name}
+        </a>
+
+        <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <Link href="/user">
+            <a className="dropdown-item">Profile</a>
+          </Link>
+          <Link href="/orders">
+            <a className="dropdown-item">Orders</a>
+          </Link>
+          {auth.user.role === "admin" && adminRouter()}
+          <div className="dropdown-divider"></div>
+          <button className="dropdown-item" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </li>
+    );
   };
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -34,7 +111,7 @@ const Nav = () => {
         className="collapse navbar-collapse justify-content-end"
         id="navbar1"
       >
-        <ul className="navbar-nav mr-auto">
+        <ul className="navbar-nav p-1">
           <li className="nav-item">
             <a className="nav-link" href="/user/link/create">
               Submit Link
@@ -48,12 +125,30 @@ const Nav = () => {
         </ul>
         <ul className="navbar-nav ml-auto">
           <CartIcon />
-          {process.browser && isAuth() && isAuth().role === "admin" && (
+          {Object.keys(auth).length === 0 ? (
+            <>
+              <li className="nav-item">
+                <Link href="/login">
+                  <a className={"nav-link" + isActive("/login")}>
+                    <i className="fas fa-user" aria-hidden="true"></i> Login
+                  </a>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link href="/register">
+                  <a className={"nav-link" + isActive("/register")}>Register</a>
+                </Link>
+              </li>
+            </>
+          ) : (
+            loggedRouter()
+          )}
+          {/* {process.browser && auth.user && auth.user.role === "admin" && (
             <>
               <div className="avatar">
                 <img
-                  src={isAuth().avatar}
-                  alt={isAuth().avatar}
+                  src={auth.user.avatar}
+                  alt={auth.user.avatar}
                   style={{
                     borderRadius: "50%",
                     width: "30px",
@@ -72,11 +167,11 @@ const Nav = () => {
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  {isAuth().name}
+                  {auth.user.name}
                 </a>
                 <div
                   className="dropdown-menu"
-                  style={{ marginLeft: "-3rem" }}
+                  style={{ marginLeft: "-5rem" }}
                   aria-labelledby="navbarDropdownMenuLink"
                 >
                   <Link href="/admin">
@@ -89,7 +184,7 @@ const Nav = () => {
                     <a className="dropdown-item">Orders</a>
                   </Link>
                   <div className="dropdown-divider"></div>
-                  {isAuth() && (
+                  {auth.user && (
                     <Link href="#">
                       <a className="dropdown-item" onClick={logout}>
                         Logout
@@ -100,12 +195,12 @@ const Nav = () => {
               </li>
             </>
           )}
-          {process.browser && isAuth() && isAuth().role === "subscriber" && (
+          {process.browser && auth.user && auth.user.role === "subscriber" && (
             <>
               <div className="avatar">
                 <img
-                  src={isAuth().avatar}
-                  alt={isAuth().avatar}
+                  src={auth.user.avatar}
+                  alt={auth.user.avatar}
                   style={{
                     borderRadius: "50%",
                     width: "30px",
@@ -124,7 +219,7 @@ const Nav = () => {
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  {isAuth().name}
+                  {auth.user.name}
                 </a>
                 <div
                   className="dropdown-menu"
@@ -138,7 +233,7 @@ const Nav = () => {
                     <a className="dropdown-item">Orders</a>
                   </Link>
                   <div className="dropdown-divider"></div>
-                  {isAuth() && (
+                  {auth.user && (
                     <button className="dropdown-item" onClick={logout}>
                       Logout
                     </button>
@@ -147,7 +242,7 @@ const Nav = () => {
               </li>
             </>
           )}
-          {process.browser && !isAuth() && (
+          {process.browser && !auth.user && (
             <>
               <li className="nav-item">
                 <Link href="/login">
@@ -162,7 +257,7 @@ const Nav = () => {
                 </Link>
               </li>
             </>
-          )}
+          )} */}
         </ul>
       </div>
     </nav>

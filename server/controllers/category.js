@@ -58,7 +58,10 @@ exports.create = (req, res) => {
         console.log(err);
         res.status(400).json({ error: "Duplicate category" });
       }
-      return res.json(success);
+      return res.json({
+        msg: "Category created",
+        success,
+      });
     });
   });
 };
@@ -152,13 +155,10 @@ exports.list = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  // Grab slug
   const { slug } = req.params;
-  // For pagination and infinate scroll
   let limit = req.body.limit ? parseInt(req.body.limit) : 10;
   let skip = req.body.skip ? parseInt(req.body.skip) : 0;
 
-  // Find links per category
   Category.findOne({ slug })
     .populate("postedBy", "_id name username")
     .exec((err, category) => {
@@ -248,11 +248,14 @@ exports.update = (req, res) => {
               console.log(err);
               res.status(400).json({ error: "Duplicate category" });
             }
-            res.json(success);
+            return res.json({ msg: "Category updated" });
           });
         });
       } else {
-        res.json(updated);
+        res.json({
+          msg: "Category updated",
+          updated,
+        });
       }
     }
   );
@@ -279,7 +282,7 @@ exports.remove = (req, res) => {
     });
 
     res.json({
-      message: "Category deleted successfully",
+      msg: "Category deleted successfully",
     });
   });
 };

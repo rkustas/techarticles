@@ -1,17 +1,14 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { API } from "../config";
 import axios from "axios";
-import { isAuth } from "../helpers/auth";
 import { ProductContext } from "./context/globalstate";
 import { updateItem } from "./context/actions";
-import { getCookieFromBrowser } from "../helpers/auth";
 
 const PaypalButton = ({ order }) => {
   const refPaypalBtn = useRef();
   const { state, dispatch } = useContext(ProductContext);
-  const { orders } = state;
+  const { orders, auth } = state;
 
-  const token = getCookieFromBrowser("token");
   // console.log(token);
 
   const patchData = async (details) => {
@@ -22,11 +19,11 @@ const PaypalButton = ({ order }) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${auth.token}`,
         },
       }
     );
-    console.log(res);
+    // console.log(res);
 
     if (res.err) {
       return dispatch({ type: "NOTIFY", payload: { error: res.err } });

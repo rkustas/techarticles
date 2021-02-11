@@ -6,23 +6,24 @@ import Resizer from "react-image-file-resizer";
 // Dynamic import, whatever you import will be active in this variable, run in client side env
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { API } from "../../../config";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 // Bring in custom react quill bubble theme css
 import "react-quill/dist/quill.bubble.css";
 import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
 
 // Function to create a category
 const Create = ({ user, token }) => {
-  const [state, setState] = useState({
+  const [category, setCategory] = useState({
     name: "",
-    error: "",
-    success: "",
-    //   Browser API
-    // formData: process.browser && new FormData(),
-    buttonText: "Create",
     image: "",
   });
+
+  // Bring in context state for loading
+  const { state, dispatch } = useContext(ProductContext);
+  const { artCategories } = state;
+  // console.log(artCategories);
 
   // Need to use the entire event not just the target value for content so created its own state independent of other handleChange values
   const [content, setContent] = useState("");
@@ -32,15 +33,7 @@ const Create = ({ user, token }) => {
     "Upload Image"
   );
 
-  const {
-    name,
-    error,
-    success,
-    // formData,
-    buttonText,
-    imageUploadText,
-    image,
-  } = state;
+  const { name, imageUploadText, image } = category;
 
   const handleChange = (name) => (e) => {
     // //   Handling the changes, setting state upon typing target becomes files when dealing with files
@@ -51,11 +44,9 @@ const Create = ({ user, token }) => {
     //   name === "image" ? e.target.files[0].name : "Upload Image";
     // //   Set the formdata
     // formData.set(name, value);
-    setState({
-      ...state,
+    setCategory({
+      ...category,
       [name]: e.target.value,
-      error: "",
-      success: "",
     });
   };
 
@@ -63,39 +54,36 @@ const Create = ({ user, token }) => {
   const handleContent = (e) => {
     // console.log(e);
     setContent(e);
-    setState({ ...state, success: "", error: "" });
   };
 
   // Handle image
   const handleImage = (event) => {
-    let fileInput = false;
-    if (event.target.files[0]) {
-      fileInput = true;
+    let file = event.target.files[0];
+    if (!file) {
+      return dispatch({
+        type: "NOTIFY",
+        payload: { error: "File does not exist." },
+      });
     }
-    setImageUploadButtonName(event.target.files[0].name);
-    if (fileInput) {
-      Resizer.imageFileResizer(
-        event.target.files[0],
-        300,
-        300,
-        "JPEG",
-        100,
-        0,
-        (uri) => {
-          // console.log(uri);
-          setState({ ...state, image: uri, success: "", error: "" });
-        },
-        "base64"
-      );
-    }
+    setImageUploadButtonName(file.name);
+    Resizer.imageFileResizer(
+      event.target.files[0],
+      300,
+      300,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        // console.log(uri);
+        setCategory({ ...category, image: uri });
+      },
+      "base64"
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setState({
-      ...state,
-      buttonText: "Creating",
-    });
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     // console.table({ name, content, image });
     // Request with token to category
     try {
@@ -108,27 +96,34 @@ const Create = ({ user, token }) => {
           },
         }
       );
-      console.log("CATEGORY CREATE RESPONSE", response);
+      // console.log("CATEGORY CREATE RESPONSE", response);
       // Set buttonText
       setImageUploadButtonName("Upload Image");
       setContent("");
       // Set state upon valid request
-      setState({
-        ...state,
+      setCategory({
+        ...category,
         name: "",
         content: "",
-        formData: "",
-        buttonText: "Created",
         imageUploadText: "Upload image",
-        success: `${response.data.name} is created`,
+      });
+      dispatch({
+        type: "ADD_ARTICLE_CAT",
+        payload: [...artCategories, response.data.success],
+      });
+
+      return dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
       });
     } catch (error) {
-      console.log("CATEGORY CREATE ERROR", error);
-      setState({
-        ...state,
-        buttonText: "Create",
-        error: error.response.data.error,
-      });
+      // console.log("CATEGORY CREATE ERROR", error);
+      setCategory({ ...category });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
@@ -141,7 +136,6 @@ const Create = ({ user, token }) => {
           type="text"
           value={name}
           className="form-control"
-          required
         />
       </div>
       <div className="form-group">
@@ -170,34 +164,31 @@ const Create = ({ user, token }) => {
             // Accept images from all types, png, jpeg, etv
             accept="image/*"
             className="form-control"
-            required
             hidden
           />
         </label>
       </div>
       <div>
-        <button className="btn btn-outline-dark btn-block">{buttonText}</button>
+        <button className="btn btn-outline-dark btn-block">Create</button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Create Category</title>
         </Head>
       </div>
-      <div className="row">
+      <div className="row bg-white p-5" style={{ border: "1px solid black" }}>
         <div className="col-md-6 offset-md-3">
           <h1>Create category</h1>
           <br />
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
           {createCategoryForm()}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

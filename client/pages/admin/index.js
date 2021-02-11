@@ -45,7 +45,7 @@ const Admin = ({ user }) => (
             </Link>
           </li>
           <li className="nav-item">
-            <Link href="/createproduct">
+            <Link href="/create">
               <a className="nav-link">Create Product</a>
             </Link>
           </li>

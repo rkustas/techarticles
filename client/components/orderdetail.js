@@ -1,13 +1,14 @@
 import axios from "axios";
 import Link from "next/link";
 import PaypalButton from "../components/paypalButton";
-import { isAuth } from "../helpers/auth";
 import { updateItem } from "./context/actions";
 import { API } from "../config";
 import { getCookieFromBrowser } from "../helpers/auth";
 
 const DetailOrder = ({ orderDetail, state, dispatch }) => {
-  const { orders } = state;
+  const { orders, auth } = state;
+
+  // console.log(orderDetail);
 
   const token = getCookieFromBrowser("token");
   // console.log(token);
@@ -48,7 +49,7 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
     });
   };
 
-  if (!isAuth()) return null;
+  if (!auth.user) return null;
 
   return (
     <>
@@ -59,6 +60,7 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
             style={{
               margin: "20px auto",
               backgroundColor: "white",
+              width: "750px",
             }}
           >
             <h2 className="text-break">Order {order._id}</h2>
@@ -79,7 +81,7 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
                   ? `Delivered on ${order.updatedAt}`
                   : "Not delivered"}
 
-                {isAuth().role === "admin" && !order.delivered && (
+                {auth.user.role === "admin" && !order.delivered && (
                   <button
                     className="btn btn-dark text-uppercase"
                     onClick={() => handleDelivered(order)}
@@ -90,6 +92,7 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
               </div>
 
               <h3>Payment</h3>
+              <hr />
               {order.method && (
                 <>
                   <hr />
@@ -122,8 +125,8 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
                     style={{ maxWidth: "950px" }}
                   >
                     <img
-                      src={item.Image}
-                      alt={item.Image}
+                      src={item.images[0]}
+                      alt={item.images[0]}
                       style={{
                         width: "50px",
                         height: "45px",
@@ -132,18 +135,19 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
                     />
                     <h6 className="text-secondary px-2 m-0">
                       <Link href={`/store/${item._id}`}>
-                        <a>{item.Name}</a>
+                        <a>{item.name}</a>
                       </Link>
                     </h6>
                     <span className="text-info m-0">
-                      {item.count} x ${item.Price} = ${item.Price * item.count}
+                      {item.quantity} x ${item.price} = $
+                      {item.price * item.quantity}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          {!order.paid && isAuth().role !== "admin" && (
+          {!order.paid && auth.user.role !== "admin" && (
             <div className="p-4">
               <h2 className="mg-4 text-uppercase">Total: ${order.total}</h2>
               <PaypalButton order={order} />

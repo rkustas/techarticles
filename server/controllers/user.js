@@ -116,7 +116,10 @@ exports.update = (req, res) => {
 
     updated.hashed_password = undefined;
     updated.salt = undefined;
-    res.json(updated);
+    res.json({
+      updated,
+      msg: "Profile updated!",
+    });
   });
 };
 

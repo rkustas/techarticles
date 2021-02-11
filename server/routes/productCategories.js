@@ -33,7 +33,7 @@ router.post(
   productCategoryCreateValidator,
   create
 );
-router.get("/productCategories", reqSignin, adminMiddleware, list);
+router.get("/productCategories", list);
 router.put("/productCategories/:id", reqSignin, adminMiddleware, update);
 router.delete("/productCategories/:id", reqSignin, adminMiddleware, remove);
 

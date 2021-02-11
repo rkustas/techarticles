@@ -65,7 +65,7 @@ exports.linkPublishedParams = (email, data) => {
         Html: {
           Charset: "UTF-8",
           Data: `<html>
-                <h1>New link published! | reactawsmongo.com</h1>
+                <h1>New link published! | ryankustas.com</h1>
                 <p>A new link titled <b>${
                   data.title
                 }</b> has been published for the following categories:</p>
@@ -86,7 +86,7 @@ exports.linkPublishedParams = (email, data) => {
                   <br />
 
                   <p>Do not wish to received these notifications?</p>
-                  <p>Turn off notifications by going to your <b>dashboard</b> > <b>update profile</b> and <b>uncheck the categories</b></p>
+                  <p>Turn off notifications by going to your <b>dashboard</b> > <b>profile</b> and <b>uncheck the categories</b></p>
                   <p>${process.env.CLIENT_URL}/user/profile/update</p>
                 </html>`,
         },

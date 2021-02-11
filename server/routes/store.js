@@ -18,7 +18,7 @@ const { create, list, read, update, remove } = require("../controllers/store");
 // Routes
 // Use post because we want req.body
 router.post(
-  "/store/create",
+  "/create",
   storeCreateValidator,
   runValidation,
   reqSignin,
@@ -28,7 +28,7 @@ router.post(
 router.get("/store/products", list);
 router.get("/store/:id", read);
 router.put(
-  "/store/:id",
+  "/edit/:id",
   storeUpdateValidator,
   runValidation,
   reqSignin,

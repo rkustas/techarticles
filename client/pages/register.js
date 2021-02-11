@@ -1,31 +1,33 @@
-import Layout from "../components/layout";
 import axios from "axios";
 import Router from "next/router";
-import { showSuccessMessage, showErrorMessage } from "../helpers/alerts";
 import { API } from "../config";
-import { isAuth } from "../helpers/auth";
 import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 // Create a state using hook
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { ProductContext } from "../components/context/globalstate";
 
 const Register = () => {
   // State where name,email,password are stored and function to update the state
-  const [state, setState] = useState({
+  const [register, setRegister] = useState({
     name: "",
     email: "",
     password: "",
     cf_password: "",
-    error: "",
-    success: "",
-    buttonText: "Register",
     loadedCategories: [],
     categories: [],
   });
 
+  const { state, dispatch } = useContext(ProductContext);
+  const { auth } = state;
+
+  const router = useRouter();
+
   // Runs when component mounts and unmounts
   useEffect(() => {
-    isAuth() && Router.push("/");
+    auth.user && Router.push("/");
   });
 
   //   Destructure values from state
@@ -34,22 +36,19 @@ const Register = () => {
     email,
     password,
     cf_password,
-    error,
-    success,
-    buttonText,
     loadedCategories,
     categories,
-  } = state;
+  } = register;
 
   // Load categories when component mounts, run whenever success changes
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [categories]);
 
   // Load categories
   const loadCategories = async () => {
     const response = await axios.get(`${API}/categories`);
-    setState({ ...state, loadedCategories: response.data });
+    setRegister({ ...register, loadedCategories: response.data });
   };
 
   const handleToggle = (c) => () => {
@@ -65,7 +64,7 @@ const Register = () => {
       all.splice(clickedCategory, 1);
     }
     // console.log("all >> categories", all);
-    setState({ ...state, categories: all, success: "", error: "" });
+    setRegister({ ...register, categories: all });
   };
 
   //   Show Category checkbox
@@ -87,19 +86,16 @@ const Register = () => {
 
   const handleChange = (name) => (e) => {
     //   Handling the changes, setting state upon typing
-    setState({
-      ...state,
+    setRegister({
+      ...register,
       [name]: e.target.value,
-      error: "",
-      success: "",
-      buttonText: "Register",
     });
   };
 
   // Asynchronous call and response upon submitting form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setState({ ...state, buttonText: "Registering" });
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     try {
       const response = await axios.post(`${API}/register`, {
         name,
@@ -116,70 +112,77 @@ const Register = () => {
         email: "",
         password: "",
         cf_password: "",
-        buttonText: "Submitted",
-        success: response.data.message,
       });
+      dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
+
+      return router.push("/login");
     } catch (error) {
       // console.log(error);
       // If error in response, return current state, and error message
-      setState({
-        ...state,
-        buttonText: "Register",
-        error: error.response.data.error,
+      setRegister({
+        ...register,
       });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
   const registerForm = () => (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
+        <label htmlFor="name">Name</label>
         <input
           value={name}
           onChange={handleChange("name")}
           type="text"
           className="form-control"
-          placeholder="Type your name"
-          required
         />
       </div>
       <div className="form-group">
+        <label htmlFor="email">Email</label>
         <input
           value={email}
           onChange={handleChange("email")}
           type="text"
           className="form-control"
-          placeholder="Type your email"
-          required
         />
       </div>
       <div className="form-group">
+        <label htmlFor="password">Password</label>
         <input
           value={password}
           onChange={handleChange("password")}
           type="password"
           className="form-control"
-          placeholder="Type your password"
-          required
+          aria-describedby="passwordHelp"
         />
+        <small id="passwordHelp" className="form-text text-danger">
+          Must be 6 or more characters
+        </small>
       </div>
       <div className="form-group">
+        <label htmlFor="cf_password">Confirm Password</label>
         <input
           value={cf_password}
           onChange={handleChange("cf_password")}
           type="password"
           className="form-control"
-          placeholder="Confirm your password"
-          required
         />
       </div>
-      <div className="form-group">
+      <div className="form-check">
         <label className="text-muted ml-4">Category</label>
         <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
           {showCategories()}
         </ul>
       </div>
       <div className="form-group text-center">
-        <button className="btn btn-dark btn-block">{buttonText}</button>
+        <button className="btn btn-dark btn-block">Register</button>
       </div>
     </form>
   );
@@ -191,13 +194,20 @@ const Register = () => {
           <title>Register</title>
         </Head>
       </div>
-      <div className="col-md-6 offset-md-3">
+      <div
+        className="col-md-6 offset-md-3 bg-white p-3"
+        style={{ border: "1px solid black" }}
+      >
         <h1>Register</h1>
         <br />
-        {success && showSuccessMessage(success)}
-        {error && showErrorMessage(error)}
         {registerForm()}
       </div>
+      <p className="text-center mt-2">
+        <span className="mr-2">Already Registered?</span>
+        <Link href="/login">
+          <a style={{ color: "blue" }}>Login</a>
+        </Link>
+      </p>
     </>
   );
 };

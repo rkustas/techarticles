@@ -21,9 +21,9 @@ exports.userRegisterValidator = [
         throw new Error("Passwords must be same");
       }
     }),
-  // check("categories")
-  //   .isLength({ min: 6 })
-  //   .withMessage("Please choose at least one category"),
+  check("categories")
+    .isLength({ min: 6 })
+    .withMessage("Please choose at least one category"),
 ];
 
 exports.userLoginValidator = [

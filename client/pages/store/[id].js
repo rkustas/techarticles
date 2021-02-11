@@ -1,6 +1,6 @@
 import Layout from "../../components/layout";
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { API } from "../../config";
 import Link from "next/link";
 import { ButtonContainer } from "../../Components/button";
@@ -8,20 +8,29 @@ import Head from "next/head";
 import { addToCart } from "../../components/context/actions";
 import { ProductContext } from "../../components/context/globalstate";
 
-const Item = ({ product, token }) => {
+const Item = (props) => {
+  const [product] = useState(props.product);
+
   const {
-    Name,
-    Image,
-    Price,
-    CompanyName,
-    CompanyCountry,
-    Category,
-    BodyLocation,
-    CompanyCity,
+    name,
+    images,
+    price,
+    description,
+    companyName,
+    companyCountry,
+    bodyLocation,
+    companyCity,
     sold,
   } = product;
+
+  const [tab, setTab] = useState(0);
   const { state, dispatch } = useContext(ProductContext);
   const { cart } = state;
+
+  const isActive = (index) => {
+    if (tab === index) return " active";
+    return "";
+  };
 
   return (
     <Layout>
@@ -33,55 +42,79 @@ const Item = ({ product, token }) => {
       <div className="container py-5 bg-white">
         <div className="row">
           <div className="col-10 mx-auto text-center my-5">
-            <h1>{Name}</h1>
-            <h3 className="text-title text-uppercase">Sold: {sold}</h3>
+            <h1 className="text-uppercase">{name}</h1>
+            <h3 className="text-title text-uppercase lead">
+              Sold: <span className="text-danger">{sold}</span>
+            </h3>
           </div>
         </div>
         {/* Product Image */}
         <div className="row">
-          <div className="col-10 mx-auto col-md-6 my-3">
-            <img src={Image} className="h-100 w-100 p-5" alt={Name} />
+          <div className="col-md-6">
+            <img
+              src={images[tab]}
+              className="d-block img-thumbnail rounded mt-4 w-100"
+              alt={images[tab]}
+            />
+            <div className="row mx-0" style={{ cursor: "pointer" }}>
+              {images.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={img}
+                  className={`img-thumbnail rounded ${isActive(index)}`}
+                  style={{ height: "80px", width: "20%" }}
+                  onClick={() => setTab(index)}
+                />
+              ))}
+            </div>
           </div>
           {/* Product Text */}
-          <div className="col-10 mx-auto col-md-6 my-3 text-capitalize mb-5 align-self-center">
+          <div className="col-md-6 mt-3">
             <h3 className="text-capitalize font-weight-bold">
               Manufacturer Detail:
             </h3>
-            <h4 className="text-title text-uppercase text-muted mb-3">
-              made by : <span className="text-uppercase">{CompanyName}</span>
+            <hr />
+            <h4 className="text-title text-muted mb-3 lead">
+              Made by:{" "}
+              <span className="text-uppercase text-primary">{companyName}</span>
             </h4>
-            <h4 className="text-title text-uppercase text-muted mb-5">
-              made in :{" "}
-              <span className="text-uppercase">
-                {CompanyCity}, {CompanyCountry}
+            <h4 className="text-title text-muted mb-5 lead">
+              Made in:{" "}
+              <span className="text-uppercase text-primary">
+                {companyCity}, {companyCountry}
               </span>
             </h4>
-            <h4 className="text-blue mb-5 text-uppercase">
+            <h4 className="text-capitalize font-weight-bold">Price</h4>
+            <hr />
+            <h3 className="text-blue mb-5 text-uppercase">
               <strong>
-                Price: <span>$</span>
-                {Price}
+                <span>$</span>
+                {price}
               </strong>
-            </h4>
-            <h4 className="text-capitalize font-weight-bold">
+            </h3>
+            <h3 className="text-capitalize font-weight-bold">
               some info about the product:
+            </h3>
+            <hr />
+            <h4 className="text-title text-muted lead mb-3">
+              Location: <span className="text-danger">{bodyLocation}</span>
             </h4>
-            <h5 className="text-title text-muted lead mb-0">
-              Location: {BodyLocation}
-            </h5>
-            <h5 className="text-title text-muted lead">
-              Product Category: {Category}
-            </h5>
-            <div className="col-md-12 mt-3">
+            <h4 className="text-title text-muted lead">
+              Description: <span className="text-danger">{description}</span>
+            </h4>
+            <div className="col-md-12 mt-5">
               <Link href={`/store`}>
                 <span className="pr-3">
-                  <ButtonContainer>Back to Products</ButtonContainer>
+                  <button className="btn btn-warning">Back to Products</button>
                 </span>
               </Link>
-              <ButtonContainer
+              <button
+                className="btn btn-dark mr-3"
                 onClick={() => dispatch(addToCart(product, cart))}
               >
                 Add to Cart
-              </ButtonContainer>
+              </button>
             </div>
           </div>
         </div>
@@ -90,10 +123,19 @@ const Item = ({ product, token }) => {
   );
 };
 // Use getInitalProps to get the cookie information and token
-Item.getInitialProps = async ({ req, token, query }) => {
-  const response = await axios.get(`${API}/store/${query.id}`);
+// Item.getInitialProps = async ({ req, token, query }) => {
+//   const response = await axios.get(`${API}/store/${query.id}`);
 
-  //   Item in response now
-  return { product: response.data, token };
-};
+//   //   Item in response now
+//   return { product: response.data, token };
+// };
+
+export async function getServerSideProps({ query: { id } }) {
+  const { data: product } = await axios.get(`${API}/store/${id}`);
+  return {
+    props: {
+      product,
+    },
+  };
+}
 export default Item;

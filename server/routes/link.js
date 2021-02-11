@@ -27,6 +27,7 @@ const {
   clickCount,
   popularInCategory,
   popular,
+  listAll,
 } = require("../controllers/link");
 
 // Routes
@@ -39,6 +40,7 @@ router.post(
   authMiddleware,
   create
 );
+router.get("/allLinks", listAll);
 router.post("/links", reqSignin, adminMiddleware, list);
 router.put("/click-count", clickCount);
 router.get("/link/popular", popular);

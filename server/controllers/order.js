@@ -18,12 +18,7 @@ exports.create = async (req, res) => {
 
     // Filter and update sold
     cart.filter((item) => {
-      return soldUpdate(
-        item.productnumber,
-        item.count,
-        item.inStock,
-        item.sold
-      );
+      return soldUpdate(item._id, item.quantity, item.inStock, item.sold);
     });
 
     // Save the order
@@ -39,12 +34,12 @@ exports.create = async (req, res) => {
 };
 
 // Shortcut sold function
-const soldUpdate = async (id, count, oldInStock, oldSold) => {
-  await Store.findOneAndUpdate(
-    { id: id },
+const soldUpdate = async (id, quantity, oldInStock, oldSold) => {
+  await Store.findByIdAndUpdate(
+    { _id: id },
     {
-      inStock: oldInStock - count,
-      sold: count + oldSold,
+      inStock: oldInStock - quantity,
+      sold: quantity + oldSold,
     },
     { new: true }
   );

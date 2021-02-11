@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   showSuccessMessage,
@@ -9,6 +9,7 @@ import Router, { withRouter } from "next/router";
 import jwt from "jsonwebtoken";
 import Layout from "../../../../components/layout";
 import Head from "next/head";
+import { ProductContext } from "../../../../components/context/globalstate";
 
 const ResetPassword = ({ router }) => {
   // Create state to store token
@@ -16,15 +17,15 @@ const ResetPassword = ({ router }) => {
     name: "",
     token: "",
     newPassword: "",
-    buttonText: "Reset Password",
-    success: "",
-    error: "",
   });
+
+  const { dispatch } = useContext(ProductContext);
+
   // Destructure state variables
-  const { name, token, newPassword, buttonText, success, error } = state;
+  const { name, token, newPassword } = state;
 
   useEffect(() => {
-    console.log(router);
+    // console.log(router);
     //   Since we name our page id, the token id is already available to us
     const decoded = jwt.decode(router.query.id);
     if (decoded) {
@@ -37,32 +38,37 @@ const ResetPassword = ({ router }) => {
   }, [router]);
 
   const handleChange = (e) => {
-    setState({ ...state, newPassword: e.target.value, success: "", error: "" });
+    setState({ ...state, newPassword: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log("Post email to", email);
-    setState({ ...state, buttonText: "Sending" });
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     try {
       const response = await axios.put(`${API}/reset-password`, {
         resetPasswordLink: token,
         newPassword,
       });
+      dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
       //   console.log("FORGOT PASSWORD", response);
       setState({
         ...state,
         newPassword: "",
-        buttonText: "Done",
-        success: response.data.message,
       });
     } catch (error) {
-      console.log("RESET PW ERROR", error);
+      // console.log("RESET PW ERROR", error);
       setState({
         ...state,
-        buttonText: "Reset Password",
-        error: error.response.data.error,
       });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
@@ -79,29 +85,30 @@ const ResetPassword = ({ router }) => {
         />
       </div>
       <div>
-        <button className="btn btn-outline-dark">{buttonText}</button>
+        <button className="btn btn-dark btn-block">Reset Password</button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Password Reset</title>
         </Head>
       </div>
       <div className="row">
-        <div className="col-md-6 offset-md-3">
+        <div
+          className="col-md-6 offset-md-3 bg-white p-5"
+          style={{ border: "1px solid black" }}
+        >
           <h1>Hi {name}, please reset your password</h1>
           <br />
           {/* If successful show success message */}
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
           {passwordResetForm()}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

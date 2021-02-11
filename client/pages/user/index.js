@@ -11,7 +11,6 @@ import Profile from "../../components/update";
 const User = ({ user, userLinks, userOrders, token }) => {
   // console.log(user, userLinks, userOrders);
   const [links, setAllLinks] = useState(userLinks);
-  const [orders, setOrders] = useState(userOrders);
 
   // console.log(orders[0]._id);
 
@@ -32,7 +31,7 @@ const User = ({ user, userLinks, userOrders, token }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("LINK DELETE SUCCESS ", response);
+      // console.log("LINK DELETE SUCCESS ", response);
       Router.replace("/user");
     } catch (error) {
       console.log("LINK DELETE ", error);

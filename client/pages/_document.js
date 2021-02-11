@@ -18,7 +18,8 @@ class MyDocument extends Document {
             integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj"
             crossOrigin="anonymous"
           ></script>
-          <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+          <script src="https://kit.fontawesome.com/5c4eb7ab39.js"></script>
+          {/* <script src="https://kit.fontawesome.com/a076d05399.js"></script> */}
           <script
             src={`https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}`}
           ></script>

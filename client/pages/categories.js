@@ -3,23 +3,22 @@ import Head from "next/head";
 import { useContext, useState } from "react";
 import { updateItem } from "../components/context/actions";
 import { ProductContext } from "../components/context/globalstate";
+import Title from "../components/title";
 import { API } from "../config";
-import { getCookieFromBrowser, isAuth } from "../helpers/auth";
+import withAdmin from "./withAdmin";
 
 const Categories = () => {
   // Context
   const { state, dispatch } = useContext(ProductContext);
-  const { categories } = state;
-  console.log(categories);
+  const { categories, auth } = state;
+  // console.log(categories);
 
   //   Local state
   const [name, setName] = useState("");
   const [id, setId] = useState("");
 
-  const token = getCookieFromBrowser("token");
-
   const createCategory = async () => {
-    if (isAuth().role !== "admin")
+    if (auth.user.role !== "admin")
       return dispatch({
         type: "NOTIFY",
         payload: { error: "Authentication invalid" },
@@ -42,7 +41,7 @@ const Categories = () => {
         { name },
         {
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${auth.token}`,
             contentType: "application/json",
           },
         }
@@ -63,7 +62,7 @@ const Categories = () => {
         { name },
         {
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${auth.token}`,
             contentType: "application/json",
           },
         }
@@ -104,7 +103,7 @@ const Categories = () => {
       <Head>
         <title>Product Categories</title>
       </Head>
-
+      <Title name="product" title="categories"></Title>
       <div className="input-group mb-3">
         <input
           type="text"
@@ -133,12 +132,14 @@ const Categories = () => {
                 onClick={() =>
                   dispatch({
                     type: "ADD_MODAL",
-                    payload: {
-                      data: categories,
-                      id: category._id,
-                      name: category.name,
-                      type: "ADD_CATEGORIES",
-                    },
+                    payload: [
+                      {
+                        data: categories,
+                        id: category._id,
+                        name: category.name,
+                        type: "ADD_CATEGORIES",
+                      },
+                    ],
                   })
                 }
               ></i>
@@ -150,4 +151,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default withAdmin(Categories);

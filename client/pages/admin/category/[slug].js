@@ -6,22 +6,22 @@ import Resizer from "react-image-file-resizer";
 // Dynamic import, whatever you import will be active in this variable, run in client side env
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { API } from "../../../config";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 // Bring in custom react quill bubble theme css
 import "react-quill/dist/quill.bubble.css";
 import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
 
 // Function to create a category
 const Update = ({ oldCategory, token }) => {
-  const [state, setState] = useState({
+  const [category, setCategory] = useState({
     name: oldCategory.name,
-    error: "",
-    success: "",
-    buttonText: "Update",
     imagePreview: oldCategory.image.url,
     image: "",
   });
+
+  const { state, dispatch } = useContext(ProductContext);
 
   // Need to use the entire event not just the target value for content so created its own state independent of other handleChange values
   const [content, setContent] = useState(oldCategory.content);
@@ -31,7 +31,7 @@ const Update = ({ oldCategory, token }) => {
     "Update Image"
   );
 
-  const { name, error, success, buttonText, imagePreview, image } = state;
+  const { name, imagePreview, image } = category;
 
   const handleChange = (name) => (e) => {
     // //   Handling the changes, setting state upon typing target becomes files when dealing with files
@@ -42,11 +42,9 @@ const Update = ({ oldCategory, token }) => {
     //   name === "image" ? e.target.files[0].name : "Upload Image";
     // //   Set the formdata
     // formData.set(name, value);
-    setState({
-      ...state,
+    setCategory({
+      ...category,
       [name]: e.target.value,
-      error: "",
-      success: "",
     });
   };
 
@@ -54,7 +52,6 @@ const Update = ({ oldCategory, token }) => {
   const handleContent = (e) => {
     // console.log(e);
     setContent(e);
-    setState({ ...state, success: "", error: "" });
   };
 
   // Handle image
@@ -74,7 +71,7 @@ const Update = ({ oldCategory, token }) => {
         0,
         (uri) => {
           // console.log(uri);
-          setState({ ...state, image: uri, success: "", error: "" });
+          setCategory({ ...category, image: uri });
         },
         "base64"
       );
@@ -83,11 +80,8 @@ const Update = ({ oldCategory, token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setState({
-      ...state,
-      buttonText: "Updating",
-    });
-    console.table({ name, content, image });
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
+    // console.table({ name, content, image });
     // Request with token to category
     try {
       const response = await axios.put(
@@ -99,21 +93,24 @@ const Update = ({ oldCategory, token }) => {
           },
         }
       );
-      console.log("CATEGORY Update RESPONSE", response);
+      dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
+      // console.log("CATEGORY Update RESPONSE", response);
       // Set state upon valid request
-      setState({
-        ...state,
+      setCategory({
+        ...category,
         imagePreview: response.data.image.url,
-        success: `${response.data.name} is updated`,
       });
       setContent(response.data.content);
     } catch (error) {
-      console.log("CATEGORY Update ERROR", error);
-      setState({
-        ...state,
-        buttonText: "Update",
-        error: error.response.data.error,
-      });
+      // console.log("CATEGORY Update ERROR", error);
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data },
+        });
     }
   };
 
@@ -163,7 +160,7 @@ const Update = ({ oldCategory, token }) => {
         </label>
       </div>
       <div>
-        <button className="btn btn-outline-dark">{buttonText}</button>
+        <button className="btn btn-info btn-block mt-5">Update</button>
       </div>
     </form>
   );
@@ -175,12 +172,10 @@ const Update = ({ oldCategory, token }) => {
           <title>Category Detail</title>
         </Head>
       </div>
-      <div className="row">
+      <div className="row bg-white p-3" style={{ border: "1px solid black" }}>
         <div className="col-md-6 offset-md-3">
           <h1>Update category</h1>
           <br />
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
           {updateCategoryForm()}
         </div>
       </div>

@@ -2,20 +2,25 @@ import Head from "next/head";
 import { useContext } from "react";
 import { ProductContext } from "../components/context/globalstate";
 import Link from "next/link";
-import { isAuth } from "../helpers/auth";
+import Title from "../components/title";
+import withAdmin from "./withAdmin";
 
 const Users = () => {
   const { state, dispatch } = useContext(ProductContext);
-  const { users } = state;
+  const { users, auth } = state;
   // console.log(users);
 
-  if (!isAuth()) return null;
+  // if (!auth.user) return null;
 
   return (
-    <div className="table-responsive">
+    <div
+      className="table-responsive bg-white p-3"
+      style={{ border: "1px solid black" }}
+    >
       <Head>
         <title>Users</title>
       </Head>
+      <Title title="users"></Title>
       <table className="table w-100">
         <thead>
           <tr>
@@ -58,14 +63,14 @@ const Users = () => {
               <th>
                 <Link
                   href={
-                    isAuth().email !== u.email ? `edit_user/${u._id}` : `#!`
+                    auth.user.email !== u.email ? `edit_user/${u._id}` : `#!`
                   }
                 >
                   <a>
                     <i className="fas fa-edit text-info mr-2"></i>
                   </a>
                 </Link>
-                {isAuth().email !== u.email ? (
+                {auth.user.email !== u.email ? (
                   <i
                     className="fas fa-trash-alt text-danger ml-2"
                     title="Remove"
@@ -74,12 +79,14 @@ const Users = () => {
                     onClick={() =>
                       dispatch({
                         type: "ADD_MODAL",
-                        payload: {
-                          data: users,
-                          id: u._id,
-                          name: u.name,
-                          type: "ADD_USERS",
-                        },
+                        payload: [
+                          {
+                            data: users,
+                            id: u._id,
+                            name: u.name,
+                            type: "ADD_USERS",
+                          },
+                        ],
                       })
                     }
                     style={{ cursor: "pointer" }}
@@ -99,4 +106,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default withAdmin(Users);

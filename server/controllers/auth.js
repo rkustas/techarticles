@@ -75,7 +75,7 @@ exports.register = (req, res) => {
       .catch((error) => {
         console.log("ses email on register", error);
         res.json({
-          message: `We could not verify you email.  Please try again`,
+          message: `We could not verify your email.  Please try again`,
         });
       });
   });
@@ -125,7 +125,7 @@ exports.registerActivate = (req, res) => {
             });
           }
           return res.json({
-            message: "Registration success. Please login",
+            msg: "Registration success. Please login",
           });
         });
       });
@@ -160,6 +160,7 @@ exports.login = (req, res) => {
     const { _id, name, email, role, avatar } = user;
 
     return res.json({
+      msg: "Login successful!",
       token,
       user: { _id, name, email, role, avatar },
     });
@@ -244,7 +245,7 @@ exports.forgotPassword = (req, res) => {
         .then((data) => {
           console.log("ses reset pw success", data);
           return res.json({
-            message: `Email has been sent to ${email}, click on the link to reset the password`,
+            msg: `Email has been sent to ${email}, Click on the link to reset the password`,
           });
         })
         .catch((error) => {
@@ -300,7 +301,7 @@ exports.resetPassword = (req, res) => {
 
             // Message that you are successful
             res.json({
-              message: "Password Reset! Login with your new password",
+              msg: "Password Reset! Login with your new password",
             });
           });
         });

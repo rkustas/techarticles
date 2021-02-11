@@ -1,59 +1,61 @@
 // All Imports
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Layout from "../../../components/layout";
 var React = require("react");
 import axios from "axios";
 import { API } from "../../../config";
-import { getCookie, isAuth } from "../../../helpers/auth";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
+import { getCookie } from "../../../helpers/auth";
 import Head from "next/head";
+import { ProductContext } from "../../../components/context/globalstate";
 
 // Received token props from getInitalProps function down below
 const Create = ({ token }) => {
   // Create state
-  const [state, setState] = useState({
+  const [link, setLink] = useState({
     title: "",
     url: "",
     categories: [],
     loadedCategories: [],
-    success: "",
-    error: "",
     type: "",
     medium: "",
   });
 
-  const {
-    title,
-    url,
-    categories,
-    loadedCategories,
-    success,
-    error,
-    type,
-    medium,
-  } = state;
+  const { state, dispatch } = useContext(ProductContext);
+  const { auth } = state;
+
+  const { title, url, categories, loadedCategories, type, medium } = link;
 
   // Load categories when component mounts, run whenever success
   useEffect(() => {
     loadCategories();
-  }, [success]);
+  }, [categories]);
 
   // Load categories
   const loadCategories = async () => {
-    const response = await axios.get(`${API}/categories`);
-    setState({ ...state, loadedCategories: response.data });
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setLink({ ...link, loadedCategories: response.data });
+    } catch (error) {
+      if (error.response) {
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data },
+        });
+      }
+    }
   };
 
   const handleTitleChange = (e) => {
-    setState({ ...state, title: e.target.value, error: "", success: "" });
+    setLink({ ...link, title: e.target.value });
   };
 
   const handleURLChange = (e) => {
-    setState({ ...state, url: e.target.value, error: "", success: "" });
+    setLink({ ...link, url: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: "NOTIFY", payload: { loading: true } });
     // console.table({ title, url, categories, type, medium });
     try {
       const response = await axios.post(
@@ -65,29 +67,36 @@ const Create = ({ token }) => {
           },
         }
       );
-      setState({
-        ...state,
+      setLink({
+        ...link,
         title: "",
         url: "",
-        success: "Link is created",
-        error: "",
         loadedCategories: [],
         categories: [],
         type: "",
         medium: "",
       });
+      dispatch({
+        type: "NOTIFY",
+        payload: { success: response.data.msg },
+      });
     } catch (error) {
-      console.log("LINK SUBMIT ERROR", error);
-      setState({ ...state, error: error.response.data.error });
+      // console.log("LINK SUBMIT ERROR", error);
+      setLink({ ...link });
+      if (error.response)
+        return dispatch({
+          type: "NOTIFY",
+          payload: { error: error.response.data.error },
+        });
     }
   };
 
   const handleMediumClick = (e) => {
-    setState({ ...state, medium: e.target.value, success: "", error: "" });
+    setLink({ ...link, medium: e.target.value });
   };
 
   const handleTypeClick = (e) => {
-    setState({ ...state, type: e.target.value, success: "", error: "" });
+    setLink({ ...link, type: e.target.value });
   };
 
   const showMedium = () => (
@@ -97,7 +106,7 @@ const Create = ({ token }) => {
           {/* If handleTypeClick returns video then video will be checked */}
           <input
             type="radio"
-            onClick={handleMediumClick}
+            onChange={handleMediumClick}
             checked={medium === "video"}
             value="video"
             className="form-check-input"
@@ -111,7 +120,7 @@ const Create = ({ token }) => {
           {/* If handleTypeClick returns book then book will be checked*/}
           <input
             type="radio"
-            onClick={handleMediumClick}
+            onChange={handleMediumClick}
             checked={medium === "book"}
             value="book"
             className="form-check-input"
@@ -124,7 +133,7 @@ const Create = ({ token }) => {
         <label className="form-check-label">
           <input
             type="radio"
-            onClick={handleMediumClick}
+            onChange={handleMediumClick}
             checked={medium === "blog post"}
             value="blog post"
             className="form-check-input"
@@ -137,7 +146,7 @@ const Create = ({ token }) => {
         <label className="form-check-label">
           <input
             type="radio"
-            onClick={handleMediumClick}
+            onChange={handleMediumClick}
             checked={medium === "article"}
             value="article"
             className="form-check-input"
@@ -156,7 +165,7 @@ const Create = ({ token }) => {
           {/* If handleTypeClick returns free then free will be checked */}
           <input
             type="radio"
-            onClick={handleTypeClick}
+            onChange={handleTypeClick}
             checked={type === "free"}
             value="free"
             className="form-check-input"
@@ -170,7 +179,7 @@ const Create = ({ token }) => {
           {/* If handleTypeClick returns paid then paid will be checked*/}
           <input
             type="radio"
-            onClick={handleTypeClick}
+            onChange={handleTypeClick}
             checked={type === "paid"}
             value="paid"
             className="form-check-input"
@@ -195,7 +204,7 @@ const Create = ({ token }) => {
       all.splice(clickedCategory, 1);
     }
     console.log("all >> categories", all);
-    setState({ ...state, categories: all, success: "", error: "" });
+    setLink({ ...link, categories: all });
   };
 
   //   Show Category checkbox
@@ -242,49 +251,49 @@ const Create = ({ token }) => {
           className="btn btn-outline-dark btn-block"
           type="submit"
         >
-          {isAuth() || token ? "Post" : "Login to post"}
+          {auth.user || token ? "Post" : "Login to post"}
         </button>
       </div>
     </form>
   );
 
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Create Link</title>
         </Head>
       </div>
-      <div className="row">
-        <div className="col-md-12">
-          <h1>Submit a Link/URL</h1>
-          <br />
+      <div className="bg-white p-5" style={{ border: "1px solid black" }}>
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Submit a Link/URL</h1>
+            <br />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-4">
+            <div className="form-check">
+              <label className="text-muted ml-4">Category</label>
+              <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
+                {showCategories()}
+              </ul>
+            </div>
+            <div className="form-group">
+              <label className="text-muted ml-4">Type</label>
+              <hr />
+              {showTypes()}
+            </div>
+            <div className="form-group">
+              <label className="text-muted ml-4">Medium</label>
+              <hr />
+              {showMedium()}
+            </div>
+          </div>
+          <div className="col-md-8">{submitLinkForm()}</div>
         </div>
       </div>
-      <div className="row">
-        <div className="col-md-4">
-          <div className="form-check">
-            <label className="text-muted ml-4">Category</label>
-            <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
-              {showCategories()}
-            </ul>
-          </div>
-          <div className="form-group">
-            <label className="text-muted ml-4">Type</label>
-            {showTypes()}
-          </div>
-          <div className="form-group">
-            <label className="text-muted ml-4">Medium</label>
-            {showMedium()}
-          </div>
-        </div>
-        <div className="col-md-8">
-          {success && showSuccessMessage(success)}
-          {error && showErrorMessage(error)}
-          {submitLinkForm()}
-        </div>
-      </div>
-    </Layout>
+    </>
   );
 };
 
