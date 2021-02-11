@@ -5,7 +5,6 @@ import { updateItem } from "../../components/context/actions";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { API } from "../../config";
-import { getCookieFromBrowser } from "../../helpers/auth";
 
 const EditUser = () => {
   const { state, dispatch } = useContext(ProductContext);

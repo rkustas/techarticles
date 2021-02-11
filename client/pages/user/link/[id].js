@@ -1,12 +1,9 @@
 // All Imports
 import { useState, useEffect, useContext } from "react";
-import Layout from "../../../components/layout";
 var React = require("react");
 import axios from "axios";
 import withUser from "../../withUser";
 import { API } from "../../../config";
-import { getCookie, isAuth } from "../../../helpers/auth";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import Head from "next/head";
 import { ProductContext } from "../../../components/context/globalstate";
 

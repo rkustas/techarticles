@@ -1,6 +1,4 @@
-import styled from "styled-components";
 import Link from "next/link";
-import { isAuth } from "../../helpers/auth";
 import { useContext } from "react";
 import { ProductContext } from "../context/globalstate";
 import { addToCart } from "../context/actions";

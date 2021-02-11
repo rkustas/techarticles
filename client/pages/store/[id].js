@@ -1,4 +1,3 @@
-import Layout from "../../components/layout";
 import axios from "axios";
 import { useContext, useState } from "react";
 import { API } from "../../config";
@@ -33,7 +32,7 @@ const Item = (props) => {
   };
 
   return (
-    <Layout>
+    <>
       <div>
         <Head>
           <title>Store Detail</title>
@@ -119,7 +118,7 @@ const Item = (props) => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 // Use getInitalProps to get the cookie information and token

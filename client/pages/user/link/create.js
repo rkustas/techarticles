@@ -1,6 +1,5 @@
 // All Imports
 import { useState, useEffect, useContext } from "react";
-import Layout from "../../../components/layout";
 var React = require("react");
 import axios from "axios";
 import { API } from "../../../config";

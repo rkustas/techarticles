@@ -2,7 +2,6 @@ import { useState } from "react";
 import Layout from "../../../components/Layout";
 import Link from "next/link";
 import axios from "axios";
-import renderHTML from "react-render-html";
 import moment from "moment";
 import { API } from "../../../config";
 import InfiniteScroll from "react-infinite-scroller";

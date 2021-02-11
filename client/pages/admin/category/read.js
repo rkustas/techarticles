@@ -1,10 +1,6 @@
-import Layout from "../../../components/layout";
 import withAdmin from "../../withAdmin";
-import axios from "axios";
 import Link from "next/link";
-import { API } from "../../../config";
-import { useContext, useEffect, useState } from "react";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
+import { useContext } from "react";
 import Head from "next/head";
 import { ProductContext } from "../../../components/context/globalstate";
 

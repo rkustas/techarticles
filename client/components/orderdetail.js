@@ -1,6 +1,6 @@
 import axios from "axios";
 import Link from "next/link";
-import PaypalButton from "../components/paypalButton";
+import PaypalButton from "../components/paypalbutton";
 import { updateItem } from "./context/actions";
 import { API } from "../config";
 import { getCookieFromBrowser } from "../helpers/auth";

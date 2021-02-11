@@ -1,4 +1,3 @@
-import Layout from "../../components/layout";
 import axios from "axios";
 import { API } from "../../config";
 import Title from "../../components/title";

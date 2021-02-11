@@ -1,6 +1,4 @@
 import { useState, useEffect, Fragment } from "react";
-import Layout from "../../components/Layout";
-import Link from "next/link";
 import Head from "next/head";
 import axios from "axios";
 import renderHTML from "react-render-html";

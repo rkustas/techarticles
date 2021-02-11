@@ -6,8 +6,7 @@ import Resizer from "react-image-file-resizer";
 // Dynamic import, whatever you import will be active in this variable, run in client side env
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { API } from "../../../config";
-import { useContext, useEffect, useState } from "react";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
+import { useContext, useState } from "react";
 // Bring in custom react quill bubble theme css
 import "react-quill/dist/quill.bubble.css";
 import Head from "next/head";

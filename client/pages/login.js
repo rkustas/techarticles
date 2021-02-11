@@ -2,11 +2,11 @@ import axios from "axios";
 import { API } from "../config";
 import Link from "next/link";
 import Router from "next/router";
-import { authenticate, isAuth } from "../helpers/auth";
+import { authenticate } from "../helpers/auth";
 import Head from "next/head";
 
 // Create a state using hook
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { ProductContext } from "../components/context/globalstate";
 
 const Login = () => {

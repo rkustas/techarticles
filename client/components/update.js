@@ -1,6 +1,4 @@
 import axios from "axios";
-import Router from "next/router";
-import { showSuccessMessage, showErrorMessage } from "../helpers/alerts";
 import { API } from "../config";
 import { updateUser } from "../helpers/auth";
 import { ProductContext } from "./context/globalstate";

@@ -2,10 +2,8 @@
 import { useState, useEffect, useContext } from "react";
 import jwt from "jsonwebtoken";
 import axios from "axios";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
 import { withRouter } from "next/router";
-import Layout from "../../../components/layout";
 import Head from "next/head";
 import { ProductContext } from "../../../components/context/globalstate";
 

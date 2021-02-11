@@ -1,10 +1,7 @@
 // Dynamic id, only available through next.js the jwt token from auth link in registration email
 import { useContext, useState } from "react";
 import axios from "axios";
-import { showSuccessMessage, showErrorMessage } from "../../../helpers/alerts";
 import { API } from "../../../config";
-import Router from "next/router";
-import Layout from "../../../components/layout";
 import Head from "next/head";
 import { ProductContext } from "../../../components/context/globalstate";
 
