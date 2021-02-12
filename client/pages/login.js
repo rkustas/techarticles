@@ -61,9 +61,6 @@ const Login = () => {
     } catch (error) {
       // console.log(error);
       // If error in response, return current state, and error message
-      setLogin({
-        ...login,
-      });
       if (error.response)
         return dispatch({
           type: "NOTIFY",

@@ -1,5 +1,4 @@
 import axios from "axios";
-import Router from "next/router";
 import { API } from "../config";
 import Head from "next/head";
 import Link from "next/link";
@@ -27,8 +26,8 @@ const Register = () => {
 
   // Runs when component mounts and unmounts
   useEffect(() => {
-    auth.user && Router.push("/");
-  });
+    if (Object.keys(auth).length !== 0) router.push("/");
+  }, [auth]);
 
   //   Destructure values from state
   const {
@@ -104,28 +103,15 @@ const Register = () => {
         cf_password,
         categories,
       });
-      // console.log(response);
-      // If valid response, then reset the state and return a success message
-      setState({
-        ...state,
-        name: "",
-        email: "",
-        password: "",
-        cf_password: "",
-      });
-      dispatch({
+      return dispatch({
         type: "NOTIFY",
         payload: { success: response.data.msg },
       });
-
-      return router.push("/login");
+      // console.log(response);
     } catch (error) {
       // console.log(error);
       // console.log(error);
       // If error in response, return current state, and error message
-      setRegister({
-        ...register,
-      });
       if (error.response)
         return dispatch({
           type: "NOTIFY",
