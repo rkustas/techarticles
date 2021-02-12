@@ -15,4 +15,4 @@
 - Link CRUD for users,admin and Category CRUD for admin only. Protected routes for admin and users.
 - User control within app allowing profile edits and full control for admins.
 
-  ![Dumbbells](/techarticles/client/public/favicon.ico)
+  ![Dumbbells](favicon.ico)
