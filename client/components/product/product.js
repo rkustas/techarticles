@@ -26,10 +26,10 @@ const ProductItem = ({ product, handleCheck }) => {
           onClick={() => {
             dispatch(addToCart(product, cart));
           }}
-          disabled={product.inStock === 0 ? true : false}
+          disabled={!auth.user || product.inStock === 0 ? true : false}
           style={{ marginLeft: "5px", flex: 1 }}
         >
-          add to cart
+          {!auth.user ? "login to purchase" : "add to cart"}
         </button>
       </>
     );

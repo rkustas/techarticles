@@ -60,7 +60,10 @@ const User = ({ user, userLinks, userOrders, token }) => {
         <div className="col-md-8" onClick={() => handleClick(l._id)}>
           <a href={l.url} target="_blank">
             <h5 className="pt-2">{l.title}</h5>
-            <h6 className="pt-2 text-danger" style={{ fontSize: "12px" }}>
+            <h6
+              className="pt-2 text-danger"
+              style={{ fontSize: "12px", overflow: "hidden" }}
+            >
               {l.url}
             </h6>
           </a>

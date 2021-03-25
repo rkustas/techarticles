@@ -2,6 +2,7 @@ export const ACTIONS = {
   NOTIFY: "NOTIFY",
   AUTH: "AUTH",
   ADD_CART: "ADD_CART",
+  EMPTY_CART: "EMPTY_CART",
   ADD_MODAL: "ADD_MODAL",
   ADD_ORDERS: "ADD_ORDERS",
   ADD_USERS: "ADD_USERS",
@@ -45,6 +46,13 @@ export const increase = (data, id) => {
     }
   });
   return { type: "ADD_CART", payload: newData };
+};
+
+export const emptyCart = () => {
+  return {
+    type: "EMPTY_CART",
+    payload: [],
+  };
 };
 
 export const deleteItem = (data, id, type) => {

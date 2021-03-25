@@ -8,6 +8,8 @@ import { getCookie } from "../helpers/auth";
 import axios from "axios";
 import { API } from "../config";
 import { useRouter } from "next/router";
+import RemoveShoppingCartIcon from "@material-ui/icons/RemoveShoppingCart";
+import { emptyCart } from "../components/context/actions";
 
 const Cart = ({ token }) => {
   // console.log(token);
@@ -160,6 +162,20 @@ const Cart = ({ token }) => {
       </Head>
       <div className="col-md-8 text-secondary table-responsive my-3">
         <h1 className="text-2xl mb-5 text-uppercase">Shopping Cart</h1>
+        <button
+          className="btn btn-danger btn-lg"
+          onClick={() => {
+            dispatch(emptyCart());
+            dispatch({
+              type: "NOTIFY",
+              payload: { success: "Cart is empty" },
+            });
+            router.push("/store");
+          }}
+        >
+          <RemoveShoppingCartIcon fontSize="large" />
+          Clear Cart
+        </button>
         <table className="table my-3">
           <tbody>
             {cart.length &&
@@ -199,14 +215,15 @@ const Cart = ({ token }) => {
           <h3>
             Total: <span className="text-danger">${total}</span>
           </h3>
-
-          <span className="text-center px-3">
-            <>
+          <div className="text-center">
+            <span>
               <Link href={"/store"}>
-                <button className="btn btn-outline-danger mr-3">
+                <button className="btn btn-outline-danger mr-2 my-2">
                   Continue Shopping
                 </button>
               </Link>
+            </span>
+            <span>
               <Link href={"#!"}>
                 <button
                   className="btn btn-outline-success"
@@ -215,8 +232,8 @@ const Cart = ({ token }) => {
                   Proceed with Payment
                 </button>
               </Link>
-            </>
-          </span>
+            </span>
+          </div>
         </form>
       </div>
     </div>

@@ -115,7 +115,7 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
                 {order.paid ? `Paid on ${order.dateOfPayment}` : "Not paid"}
               </div>
 
-              <div>
+              <div className="text-center">
                 <h3>Order Items</h3>
                 <hr />
                 {order.cart.map((item) => (
@@ -132,6 +132,7 @@ const DetailOrder = ({ orderDetail, state, dispatch }) => {
                         height: "45px",
                         objectFit: "cover",
                       }}
+                      className="img-thumbnail"
                     />
                     <h6 className="text-secondary px-2 m-0">
                       <Link href={`/store/${item._id}`}>

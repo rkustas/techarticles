@@ -86,7 +86,10 @@ const Modal = () => {
 
   const deleteCartItem = (item) => {
     dispatch(deleteItem(item.data, item.id, item.type));
-    dispatch({ type: "NOTIFY", payload: "Item removed from cart!" });
+    dispatch({
+      type: "NOTIFY",
+      payload: { success: "Item removed from cart!" },
+    });
   };
 
   const linkCategory = async (item) => {

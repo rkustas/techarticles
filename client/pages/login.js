@@ -42,6 +42,10 @@ const Login = () => {
       //   console.log(response);
       // If valid response, then store the user and token
       authenticate(response, () => {
+        //   Redirect to respective auth page if successful login
+        auth.user && auth.user.role === "admin"
+          ? Router.push("/admin")
+          : Router.push("/user");
         dispatch({
           type: "NOTIFY",
           payload: { success: response.data.msg },
@@ -53,10 +57,6 @@ const Login = () => {
             user: response.data.user,
           },
         });
-        //   Redirect to homepage if successful login
-        auth.user && auth.user.role === "admin"
-          ? Router.push("/admin")
-          : Router.push("/user");
       });
     } catch (error) {
       // console.log(error);
