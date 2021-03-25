@@ -161,7 +161,7 @@ const Links = ({
               {renderHTML(category.content || "")}
             </div>
           </div>
-          <div className="col-md-4">
+          <div className="col-md-4 text-center">
             <img
               src={category.image.url}
               alt={category.name}

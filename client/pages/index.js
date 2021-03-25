@@ -71,15 +71,11 @@ const Home = ({ categories }) => {
         >
           <div>
             <div className="row p-2">
-              <div className="col-md-4">
+              <div className="col-md-4 text-center">
                 <img
                   src={c.image.url}
                   alt={c.name}
-                  style={{
-                    width: "12rem",
-                    height: "6rem",
-                  }}
-                  className="pr-5"
+                  className="img-thumbnail h-auto"
                 />
               </div>
               <div className="col-md-8 my-4 text-center">

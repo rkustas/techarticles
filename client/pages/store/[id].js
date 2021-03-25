@@ -95,10 +95,10 @@ const Item = (props) => {
               some info about the product:
             </h3>
             <hr />
-            <h4 className="text-title text-muted lead mb-3">
+            <h4 className="text-title text-muted mb-3">
               Location: <span className="text-danger">{bodyLocation}</span>
             </h4>
-            <h4 className="text-title text-muted lead">
+            <h4 className="text-title text-muted">
               Description: <span className="text-danger">{description}</span>
             </h4>
             <div className="col-md-12 mt-5">

@@ -18,16 +18,16 @@ const Read = ({ user, token }) => {
         key={c._id}
       >
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-md-3 text-center">
             <img
               src={c.image.url}
               alt={c.name}
               style={{ width: "125px", height: "auto" }}
-              className="pr-3"
+              className="img-thumbnail"
             />
           </div>
           <div className="col-md-6">
-            <h3>{c.name}</h3>
+            <h3 className="text-center">{c.name}</h3>
           </div>
           <div className="col-md-3">
             <Link href={`/links/${c.slug}`}>
