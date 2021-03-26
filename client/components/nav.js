@@ -116,6 +116,11 @@ const Nav = () => {
       >
         <ul className="navbar-nav p-1">
           <li className="nav-item">
+            <a className="nav-link" href="/postshome">
+              Posts/Links
+            </a>
+          </li>
+          <li className="nav-item">
             <a className="nav-link" href="/user/link/create">
               Submit Link
             </a>
