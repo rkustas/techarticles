@@ -83,7 +83,6 @@ const Bio = () => {
                   className="img-thumbnail"
                   style={{ backgroundColor: "#DCDCDC" }}
                   src="/cats.jpg"
-                  hidden=""
                 />
               </FadeInSection>
             </div>
@@ -98,10 +97,10 @@ const Bio = () => {
             <div className="col-md-4">
               <FadeInSection>
                 <img
-                  className="img-thumbnail w-auto"
-                  style={{ backgroundColor: "#DCDCDC" }}
+                  id="family"
+                  className="img-thumbnail"
+                  style={{ backgroundColor: "#DCDCDC", width: "100%" }}
                   src="/family.jpg"
-                  alt=""
                 />
               </FadeInSection>
             </div>

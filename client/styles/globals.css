@@ -221,6 +221,7 @@ body::after {
 @media screen and (min-width: 768px) {
   .nav-btn {
     display: none;
+    all: initial;
   }
 
   .nav-links {
